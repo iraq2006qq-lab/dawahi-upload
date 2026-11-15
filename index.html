@@ -1,0 +1,3802 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DAWAHI UPLOAD | دواهي ابلود — استوديو تحويل الفيديو وملفات MOV الشفافة إلى GIF</title>
+
+  <!-- Google Fonts: Cairo, Tajawal & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cosmic: {
+              950: '#030612',
+              900: '#070C20',
+              850: '#0B122E',
+              800: '#111A3E',
+            },
+            violetlux: {
+              400: '#A78BFA',
+              500: '#8B5CF6',
+              600: '#7C3AED',
+              700: '#6D28D9',
+            },
+            cyanlux: {
+              300: '#67E8F9',
+              400: '#22D3EE',
+              500: '#06B6D4',
+            }
+          },
+          fontFamily: {
+            sans: ['"Tajawal"', '"Cairo"', 'sans-serif'],
+            display: ['"Cairo"', '"Tajawal"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      background-color: #030612;
+      color: #F8FAFC;
+      font-family: 'Tajawal', 'Cairo', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ==================== COSMIC AURORA & INTERACTIVE SPOTLIGHT ==================== */
+    .aurora-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      background: #030612;
+    }
+
+    .aurora-orb {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(95px);
+      opacity: 0.45;
+      will-change: transform;
+    }
+
+    .aurora-orb-1 {
+      width: 520px;
+      height: 520px;
+      top: -140px;
+      right: -100px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.55) 0%, rgba(109, 40, 217, 0) 70%);
+      animation: driftOrb1 16s ease-in-out infinite alternate;
+    }
+
+    .aurora-orb-2 {
+      width: 480px;
+      height: 480px;
+      top: 18%;
+      left: -140px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.4) 0%, rgba(34, 211, 238, 0) 70%);
+      animation: driftOrb2 20s ease-in-out infinite alternate;
+    }
+
+    .aurora-orb-3 {
+      width: 560px;
+      height: 560px;
+      bottom: -180px;
+      right: 22%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.35) 0%, rgba(6, 182, 212, 0) 72%);
+      animation: driftOrb1 22s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes driftOrb1 {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      100% { transform: translate3d(-45px, 35px, 0) scale(1.12); }
+    }
+
+    @keyframes driftOrb2 {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      100% { transform: translate3d(55px, -30px, 0) scale(1.08); }
+    }
+
+    .dot-matrix {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(148, 163, 184, 0.14) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: radial-gradient(ellipse at 50% 35%, black 25%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 35%, black 25%, transparent 80%);
+    }
+
+    .cursor-spotlight {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: radial-gradient(620px circle at var(--mouse-x, 50%) var(--mouse-y, 25%), rgba(139, 92, 246, 0.11), rgba(34, 211, 238, 0.05) 35%, transparent 70%);
+      transition: opacity 0.3s ease;
+    }
+
+    /* ==================== GLASSMORPHISM STUDIO SURFACES ==================== */
+    .studio-glass {
+      background: linear-gradient(160deg, rgba(13, 20, 48, 0.78) 0%, rgba(7, 12, 32, 0.86) 100%);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(139, 92, 246, 0.24);
+      box-shadow:
+        0 25px 60px -15px rgba(2, 4, 16, 0.85),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .studio-tile {
+      background: rgba(6, 10, 28, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      transition: border-color 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .studio-tile:hover {
+      border-color: rgba(139, 92, 246, 0.35);
+    }
+
+    /* ==================== TRANSPARENCY CHECKERBOARD & BACKDROPS ==================== */
+    .bg-checkerboard {
+      background-color: #13192b;
+      background-image:
+        linear-gradient(45deg, #1e2742 25%, transparent 25%),
+        linear-gradient(-45deg, #1e2742 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1e2742 75%),
+        linear-gradient(-45deg, transparent 75%, #1e2742 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    }
+
+    .bg-backdrop-navy {
+      background: #050816;
+    }
+
+    .bg-backdrop-black {
+      background: #000000;
+    }
+
+    .bg-backdrop-white {
+      background: #F8FAFC;
+    }
+
+    /* ==================== 3D MAGNETIC TILT DROPZONE ==================== */
+    .dropzone-stage {
+      perspective: 1200px;
+    }
+
+    .dropzone-card {
+      position: relative;
+      background: linear-gradient(145deg, rgba(16, 25, 60, 0.85), rgba(7, 11, 29, 0.94));
+      border: 1.5px dashed rgba(139, 92, 246, 0.48);
+      transform-style: preserve-3d;
+      transition:
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.3s ease,
+        box-shadow 0.35s ease,
+        background 0.35s ease;
+    }
+
+    .dropzone-card::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1.5px;
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.55), rgba(139, 92, 246, 0.55), rgba(34, 211, 238, 0.2));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    .dropzone-card:hover::before,
+    .dropzone-card.drag-active::before {
+      opacity: 1;
+    }
+
+    .dropzone-card:hover,
+    .dropzone-card.drag-active {
+      border-color: transparent;
+      background: linear-gradient(145deg, rgba(22, 34, 78, 0.92), rgba(9, 15, 40, 0.97));
+      box-shadow:
+        0 0 0 5px rgba(34, 211, 238, 0.11),
+        0 28px 65px -15px rgba(124, 58, 237, 0.45);
+    }
+
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-9px) rotate(1.5deg); }
+    }
+
+    .animate-float-icon {
+      animation: floatIcon 3.6s ease-in-out infinite;
+    }
+
+    @keyframes sonarPulse {
+      0% { transform: scale(0.92); opacity: 0.65; }
+      75% { transform: scale(1.28); opacity: 0; }
+      100% { transform: scale(1.28); opacity: 0; }
+    }
+
+    .sonar-ring {
+      animation: sonarPulse 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .animate-spin-slow {
+      animation: spinSlow 14s linear infinite;
+    }
+
+    /* ==================== INTERACTIVE BUTTONS ==================== */
+    .btn-violet-glow {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 50%, #6D28D9 100%);
+      box-shadow: 0 12px 30px -6px rgba(124, 58, 237, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .btn-violet-glow::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.24), transparent);
+      transform: skewX(-22deg);
+      transition: left 0.6s ease;
+    }
+
+    .btn-violet-glow:hover:not(:disabled)::after {
+      left: 140%;
+    }
+
+    .btn-violet-glow:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 38px -4px rgba(139, 92, 246, 0.78), 0 0 22px rgba(34, 211, 238, 0.3);
+    }
+
+    .btn-violet-glow:active:not(:disabled) {
+      transform: translateY(0) scale(0.985);
+    }
+
+    .btn-violet-glow:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-cyan-download {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #06B6D4 0%, #2563EB 50%, #7C3AED 100%);
+      box-shadow: 0 16px 40px -6px rgba(6, 182, 212, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .btn-cyan-download:hover:not(:disabled) {
+      transform: translateY(-2px);
+      filter: brightness(1.07);
+      box-shadow: 0 20px 46px -4px rgba(34, 211, 238, 0.65);
+    }
+
+    .btn-cyan-download:disabled {
+      opacity: 0.32;
+      cursor: not-allowed;
+      filter: grayscale(0.85);
+      box-shadow: none;
+    }
+
+    /* ==================== CHOREOGRAPHED SPRING REVEALS ==================== */
+    @keyframes springEnter {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.985);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .spring-enter {
+      animation: springEnter 0.48s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* ==================== CUSTOM RANGE SLIDERS ==================== */
+    input[type="range"].studio-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(23, 33, 68, 0.95);
+      border: 1px solid rgba(139, 92, 246, 0.28);
+      outline: none;
+    }
+
+    input[type="range"].studio-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #22D3EE, #8B5CF6);
+      border: 2.5px solid #F8FAFC;
+      box-shadow: 0 0 14px rgba(34, 211, 238, 0.7);
+      cursor: pointer;
+      transition: transform 0.16s ease;
+    }
+
+    input[type="range"].studio-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.16);
+    }
+
+    input[type="range"].studio-slider::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #22D3EE, #8B5CF6);
+      border: 2.5px solid #F8FAFC;
+      box-shadow: 0 0 14px rgba(34, 211, 238, 0.7);
+      cursor: pointer;
+    }
+
+    /* ==================== SPLIT COMPARISON STAGE ==================== */
+    .compare-viewport {
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: pan-y;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col selection:bg-violetlux-600 selection:text-white">
+  <!-- Cosmic Background Layers -->
+  <div class="aurora-canvas">
+    <div class="aurora-orb aurora-orb-1"></div>
+    <div class="aurora-orb aurora-orb-2"></div>
+    <div class="aurora-orb aurora-orb-3"></div>
+  </div>
+  <div class="dot-matrix"></div>
+  <div id="cursorSpotlight" class="cursor-spotlight"></div>
+
+  <!-- Main Container -->
+  <div class="relative z-10 flex-1 flex flex-col w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-9 pb-14">
+
+    <!-- ==================== HEADER & BRAND IDENTITY ==================== -->
+    <header class="text-center mb-7 sm:mb-9">
+      <!-- Local Privacy Pill -->
+      <div class="inline-flex flex-wrap items-center justify-center gap-2 px-4 py-1.5 rounded-full studio-tile text-xs sm:text-sm text-slate-300 mb-5 shadow-md">
+        <span class="inline-flex items-center gap-1.5 text-cyanlux-400 font-bold">
+          <span class="w-2 h-2 rounded-full bg-cyanlux-400 animate-ping"></span>
+          <span>معالجة محلية 100% داخل متصفحك</span>
+        </span>
+        <span class="hidden sm:inline text-slate-600">|</span>
+        <span class="text-slate-400">دعم كامل لملفات MOV الشفافة (Alpha) بدون رفع لأي خادم</span>
+      </div>
+
+      <!-- Brand Logo & Wordmark -->
+      <div class="flex flex-col items-center justify-center">
+        <div class="inline-flex items-center gap-3.5" dir="ltr">
+          <!-- Custom Animated Orbital Emblem -->
+          <div class="relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
+            <svg class="absolute inset-0 w-full h-full text-cyanlux-400/50 animate-spin-slow" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="29" stroke="currentColor" stroke-width="1.5" stroke-dasharray="6 6" />
+            </svg>
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-violetlux-500 via-violetlux-600 to-cyanlux-500 p-[1.5px] shadow-lg shadow-violetlux-600/40">
+              <div class="w-full h-full rounded-[14px] bg-cosmic-950/95 flex items-center justify-center">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-cyanlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="16" rx="4" />
+                  <path d="M10 9.2L15.2 12L10 14.8V9.2Z" fill="currentColor" stroke="none" />
+                  <circle cx="17.5" cy="7.5" r="1.2" fill="#A78BFA" stroke="none" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <h1 class="font-display text-3xl sm:text-5xl font-black tracking-wider bg-gradient-to-r from-white via-violetlux-400 to-cyanlux-300 bg-clip-text text-transparent drop-shadow-sm">
+            DAWAHI UPLOAD
+          </h1>
+        </div>
+
+        <span class="mt-1.5 text-xs sm:text-sm font-bold text-violetlux-400 bg-violetlux-500/10 border border-violetlux-500/25 px-3.5 py-0.5 rounded-full">
+          دواهي ابلود
+        </span>
+      </div>
+
+      <!-- Subtitle -->
+      <p class="mt-3.5 text-base sm:text-xl text-slate-100 font-bold max-w-xl mx-auto">
+        حوّل فيديوهاتك إلى GIF بجودة استثنائية.
+      </p>
+      <p class="mt-1 text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">
+        يدعم مقاطع <span dir="ltr" class="font-mono text-slate-200">MP4</span> و <span dir="ltr" class="font-mono text-cyanlux-400">MOV</span> (بما فيها ملفات <span dir="ltr" class="font-mono text-violetlux-400">ProRes 4444 / Alpha</span> الشفافة) بحد أقصى صارم <span dir="ltr" class="font-mono text-cyanlux-400 font-bold">7.5MB</span>
+      </p>
+
+      <!-- ==================== INTERACTIVE 4-STEP PROGRESS STEPPER ==================== -->
+      <nav aria-label="مراحل التحويل" class="mt-7 max-w-2xl mx-auto">
+        <div class="studio-glass rounded-2xl p-2.5 sm:p-3 grid grid-cols-4 gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold">
+          <div id="stepPill1" class="step-pill flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-violetlux-600/25 border border-violetlux-400/50 text-white transition-all duration-300">
+            <span class="w-5 h-5 rounded-full bg-violetlux-500 text-white flex items-center justify-center font-mono text-[11px] shrink-0">1</span>
+            <span class="truncate">رفع الملف</span>
+          </div>
+
+          <div id="stepPill2" class="step-pill flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-slate-400 border border-transparent transition-all duration-300">
+            <span class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center font-mono text-[11px] shrink-0">2</span>
+            <span class="truncate">المعاينة والضبط</span>
+          </div>
+
+          <div id="stepPill3" class="step-pill flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-slate-400 border border-transparent transition-all duration-300">
+            <span class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center font-mono text-[11px] shrink-0">3</span>
+            <span class="truncate">التحويل الذكي</span>
+          </div>
+
+          <div id="stepPill4" class="step-pill flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-slate-400 border border-transparent transition-all duration-300">
+            <span class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center font-mono text-[11px] shrink-0">4</span>
+            <span class="truncate">النتيجة والتحميل</span>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- ==================== GLOBAL NOTIFICATION / ERROR BANNER ==================== -->
+    <div id="globalAlert" class="hidden mb-6 rounded-2xl p-4 sm:p-5 border transition-all duration-300 spring-enter" role="alert">
+      <div class="flex items-start gap-3.5">
+        <div id="globalAlertIcon" class="shrink-0 mt-0.5"></div>
+        <div class="flex-1 min-w-0">
+          <h3 id="globalAlertTitle" class="font-bold text-sm sm:text-base"></h3>
+          <p id="globalAlertMessage" class="mt-1 text-xs sm:text-sm leading-relaxed opacity-95"></p>
+          <div id="globalAlertActions" class="hidden mt-3 flex flex-wrap items-center gap-2"></div>
+        </div>
+        <button type="button" id="closeAlertBtn" aria-label="إغلاق التنبيه" class="shrink-0 p-1.5 rounded-lg hover:bg-white/10 text-slate-300 transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== STAGE 1: 3D TILT HERO UPLOAD DROPZONE ==================== -->
+    <section id="uploadSection" class="studio-glass rounded-3xl p-4 sm:p-8 spring-enter">
+      <input
+        type="file"
+        id="videoFileInput"
+        accept="video/mp4,video/quicktime,.mp4,.mov"
+        class="hidden"
+      />
+
+      <div class="dropzone-stage">
+        <div
+          id="dropZone"
+          role="button"
+          tabindex="0"
+          aria-label="منطقة رفع الفيديو"
+          class="dropzone-card rounded-2xl px-5 py-12 sm:py-16 flex flex-col items-center justify-center text-center cursor-pointer"
+        >
+          <!-- Animated Floating Multi-Layer Upload Icon -->
+          <div class="relative mb-6">
+            <div class="absolute inset-0 rounded-full bg-cyanlux-400/20 sonar-ring"></div>
+            <div class="absolute -inset-2 rounded-full bg-violetlux-500/20 blur-md"></div>
+            <div class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br from-violetlux-600/35 via-cosmic-800 to-cyanlux-500/25 border border-cyanlux-400/40 flex items-center justify-center shadow-2xl animate-float-icon">
+              <svg class="w-10 h-10 sm:w-11 sm:h-11 text-cyanlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M12 16V4m0 0l-4.5 4.5M12 4l4.5 4.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M4 15.5v2.25A2.25 2.25 0 006.25 20h11.5A2.25 2.25 0 0020 17.75V15.5" stroke-linecap="round" />
+              </svg>
+            </div>
+          </div>
+
+          <h2 class="font-display text-xl sm:text-3xl font-extrabold text-white">
+            اسحب الفيديو وأفلته هنا
+          </h2>
+          <p class="mt-2 text-xs sm:text-sm text-slate-300 max-w-md leading-relaxed">
+            أو اضغط لاختيار ملف فيديو من جهازك — يدعم المقاطع العادية والشفافة المفرغة الخلفية
+          </p>
+
+          <!-- Primary File Select Button -->
+          <button
+            type="button"
+            id="selectFileBtn"
+            class="btn-violet-glow mt-6 px-8 py-4 rounded-2xl text-white font-bold text-sm sm:text-base inline-flex items-center gap-2.5 min-h-[52px]"
+          >
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>اختيار ملف فيديو</span>
+          </button>
+
+          <!-- Supported Formats & Limit Badges -->
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl studio-tile text-xs sm:text-sm">
+              <span class="text-slate-400">الصيغ المدعومة:</span>
+              <span dir="ltr" class="font-mono font-bold text-white bg-violetlux-500/25 border border-violetlux-400/35 px-2 py-0.5 rounded-md">MP4</span>
+              <span dir="ltr" class="font-mono font-bold text-cyanlux-300 bg-cyanlux-500/20 border border-cyanlux-400/35 px-2 py-0.5 rounded-md">MOV + Alpha</span>
+            </div>
+
+            <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl studio-tile text-xs sm:text-sm">
+              <svg class="w-4 h-4 text-cyanlux-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span class="text-slate-300">الحد الأقصى لحجم GIF النهائي:</span>
+              <span dir="ltr" class="font-mono font-bold text-cyanlux-400">7.5MB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Studio Capabilities Strip -->
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
+        <div class="studio-tile rounded-2xl p-4 flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-cyanlux-500/15 text-cyanlux-400 flex items-center justify-center shrink-0 border border-cyanlux-500/25">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" />
+              <rect x="14" y="14" width="7" height="7" rx="1.5" />
+              <path d="M14 3h7v7M3 14v7h7" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-white">دعم MOV الشفاف (Alpha)</p>
+            <p class="text-slate-400 text-xs mt-0.5">فك ترميز ProRes 4444 و RLE مع حفظ الشفافية</p>
+          </div>
+        </div>
+
+        <div class="studio-tile rounded-2xl p-4 flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-violetlux-500/15 text-violetlux-400 flex items-center justify-center shrink-0 border border-violetlux-500/25">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+              <path d="M12 3v3m0 12v3M3 12h3m12 0h3m-2.636-6.364l-2.121 2.121M7.757 16.243l-2.121 2.121m0-12.728l2.121 2.121m8.486 8.486l2.121 2.121" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-white">ضغط ذكي من 8 مستويات</p>
+            <p class="text-slate-400 text-xs mt-0.5">أعلى دقة طبيعية ضمن سقف 7.5MB تلقائياً</p>
+          </div>
+        </div>
+
+        <div class="studio-tile rounded-2xl p-4 flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/25">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-white">خصوصية وأمان مطلق</p>
+            <p class="text-slate-400 text-xs mt-0.5">لا يتم رفع أي ملف لسيرفر خارجي إطلاقاً</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== STAGE 2: STUDIO WORKSPACE (PREVIEW, ALPHA DECODER & TRIMMER) ==================== -->
+    <section id="workspaceSection" class="hidden space-y-6 spring-enter">
+
+      <!-- Workspace Header Controls -->
+      <div class="studio-glass rounded-2xl px-4 py-3.5 sm:px-6 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyanlux-400"></span>
+          <span class="text-sm sm:text-base font-bold text-white">استوديو المعاينة والضبط</span>
+          <span id="alphaDetectedPill" class="hidden items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyanlux-500/20 text-cyanlux-300 border border-cyanlux-400/40">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyanlux-400 animate-pulse"></span>
+            <span>فيديو شفاف Alpha مُكتشف</span>
+          </span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            id="changeVideoBtn"
+            class="px-3.5 py-2 rounded-xl studio-tile hover:border-cyanlux-400/50 text-xs sm:text-sm font-bold text-slate-200 transition inline-flex items-center gap-1.5 min-h-[42px]"
+          >
+            <svg class="w-4 h-4 text-cyanlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>اختيار فيديو آخر</span>
+          </button>
+
+          <button
+            type="button"
+            id="deleteFileBtn"
+            class="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/35 text-xs sm:text-sm font-bold text-rose-300 transition inline-flex items-center gap-1.5 min-h-[42px]"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>حذف الملف الحالي</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Preview & Metadata Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left/Main Column: Video / Alpha Preview + Backdrop Switcher + Trimmer -->
+        <div class="lg:col-span-7 studio-glass rounded-3xl p-4 sm:p-6 flex flex-col justify-between">
+          <div>
+            <!-- Preview Header & Transparency Backdrop Switcher -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-300">معاينة الفيديو الأصلي</span>
+                <span id="codecBadge" dir="ltr" class="font-mono text-[11px] font-bold px-2 py-0.5 rounded-md bg-violetlux-500/20 text-violetlux-300 border border-violetlux-400/30">
+                  MP4
+                </span>
+              </div>
+
+              <!-- Backdrop Color Swatches for Inspecting Transparent MOVs -->
+              <div class="flex items-center gap-1.5" title="تغيير خلفية المعاينة لفحص حواف الشفافية">
+                <span class="text-[11px] text-slate-400 ml-1">خلفية الفحص:</span>
+                <button type="button" data-backdrop="bg-checkerboard" class="preview-bg-btn w-6 h-6 rounded-lg bg-checkerboard border-2 border-cyanlux-400 transition" aria-label="مربعات الشفافية"></button>
+                <button type="button" data-backdrop="bg-backdrop-navy" class="preview-bg-btn w-6 h-6 rounded-lg bg-backdrop-navy border border-slate-600 transition" aria-label="كحلي داكن"></button>
+                <button type="button" data-backdrop="bg-backdrop-black" class="preview-bg-btn w-6 h-6 rounded-lg bg-backdrop-black border border-slate-600 transition" aria-label="أسود نقي"></button>
+                <button type="button" data-backdrop="bg-backdrop-white" class="preview-bg-btn w-6 h-6 rounded-lg bg-backdrop-white border border-slate-600 transition" aria-label="أبيض نقي"></button>
+              </div>
+            </div>
+
+            <!-- Stage Container -->
+            <div id="previewMediaStage" class="relative rounded-2xl overflow-hidden bg-checkerboard border border-slate-700/80 min-h-[240px] sm:min-h-[290px] flex items-center justify-center">
+              <!-- Native HTML5 Video (for H.264 / standard MP4 & Safari HEVC Alpha) -->
+              <video
+                id="sourceVideoPreview"
+                controls
+                playsinline
+                preload="metadata"
+                class="w-full max-h-[360px] object-contain"
+              ></video>
+
+              <!-- FFmpeg Alpha Pro Preview (for ProRes 4444 / QuickTime RLE / PNG-in-MOV) -->
+              <div id="alphaProPreviewBox" class="hidden w-full flex flex-col items-center justify-center p-4">
+                <img
+                  id="alphaProPreviewImg"
+                  alt="معاينة الفيديو الشفاف"
+                  class="max-w-full max-h-[320px] object-contain rounded-lg"
+                />
+                <span id="alphaProPreviewCaption" class="mt-2.5 px-3 py-1 rounded-full bg-cosmic-950/85 border border-cyanlux-400/35 text-[11px] text-cyanlux-300 font-semibold">
+                  معاينة الشفافية عبر محرك FFmpeg Alpha Pro
+                </span>
+              </div>
+
+              <!-- Decoding Spinner Overlay when FFmpeg builds transparent preview -->
+              <div id="previewDecodingOverlay" class="hidden absolute inset-0 bg-cosmic-950/85 backdrop-blur-md flex flex-col items-center justify-center p-5 text-center">
+                <div class="w-11 h-11 rounded-full border-2 border-violetlux-500/30 border-t-cyanlux-400 animate-spin mb-3"></div>
+                <p id="previewDecodingTitle" class="text-sm font-bold text-white">جارٍ فك ترميز ملف MOV الشفاف...</p>
+                <p id="previewDecodingSub" class="text-xs text-slate-400 mt-1">استخراج قناة الشفافية (Alpha Channel) للمعاينة المباشرة</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optional Precision Clip Trimmer -->
+          <div class="mt-5 studio-tile rounded-2xl p-4 border border-violetlux-500/25">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-cyanlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="6" cy="6" r="3" />
+                  <circle cx="6" cy="18" r="3" />
+                  <path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12" stroke-linecap="round" />
+                </svg>
+                <span class="text-xs sm:text-sm font-bold text-white">قص مدة الفيديو اختيارياً قبل التحويل</span>
+              </div>
+
+              <button
+                type="button"
+                id="resetTrimBtn"
+                class="text-xs text-cyanlux-400 hover:text-cyanlux-300 underline underline-offset-4 font-bold"
+              >
+                إعادة ضبط المدة الكاملة
+              </button>
+            </div>
+
+            <div class="space-y-3" dir="ltr">
+              <div>
+                <div class="flex justify-between text-xs text-slate-400 mb-1" dir="rtl">
+                  <span>نقطة البداية:</span>
+                  <div class="flex items-center gap-1.5" dir="ltr">
+                    <button type="button" id="startMinusBtn" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-xs">-0.1s</button>
+                    <span id="trimStartLabel" class="font-mono font-bold text-cyanlux-400 min-w-[54px] text-center">0.00s</span>
+                    <button type="button" id="startPlusBtn" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-xs">+0.1s</button>
+                  </div>
+                </div>
+                <input type="range" id="trimStartSlider" class="studio-slider" min="0" max="10" step="0.05" value="0" />
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs text-slate-400 mb-1" dir="rtl">
+                  <span>نقطة النهاية:</span>
+                  <div class="flex items-center gap-1.5" dir="ltr">
+                    <button type="button" id="endMinusBtn" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-xs">-0.1s</button>
+                    <span id="trimEndLabel" class="font-mono font-bold text-violetlux-400 min-w-[54px] text-center">0.00s</span>
+                    <button type="button" id="endPlusBtn" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-xs">+0.1s</button>
+                  </div>
+                </div>
+                <input type="range" id="trimEndSlider" class="studio-slider" min="0" max="10" step="0.05" value="10" />
+              </div>
+            </div>
+
+            <div class="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-xs">
+              <span class="text-slate-400">المدة المحددة للتحويل:</span>
+              <span id="selectedDurationLabel" dir="ltr" class="font-mono font-bold text-white bg-cyanlux-500/15 border border-cyanlux-400/35 px-2.5 py-0.5 rounded-lg">
+                0.00s
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Metadata, Alpha Toggle & Convert CTA -->
+        <div class="lg:col-span-5 studio-glass rounded-3xl p-4 sm:p-6 flex flex-col justify-between">
+          <div>
+            <h3 class="font-display text-base sm:text-lg font-extrabold text-white mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-violetlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>معلومات الفيديو والترميز</span>
+            </h3>
+
+            <div class="space-y-2.5 text-xs sm:text-sm">
+              <div class="studio-tile rounded-xl p-3 flex items-center justify-between gap-3">
+                <span class="text-slate-400 shrink-0">اسم الملف</span>
+                <span id="metaFileName" dir="ltr" class="font-mono font-semibold text-slate-100 truncate max-w-[195px] sm:max-w-[225px]">—</span>
+              </div>
+
+              <div class="studio-tile rounded-xl p-3 flex items-center justify-between gap-3">
+                <span class="text-slate-400">حجم الفيديو</span>
+                <span id="metaFileSize" dir="ltr" class="font-mono font-semibold text-slate-100">—</span>
+              </div>
+
+              <div class="studio-tile rounded-xl p-3 flex items-center justify-between gap-3">
+                <span class="text-slate-400">دقة الفيديو</span>
+                <span id="metaResolution" dir="ltr" class="font-mono font-semibold text-cyanlux-400">—</span>
+              </div>
+
+              <div class="studio-tile rounded-xl p-3 flex items-center justify-between gap-3">
+                <span class="text-slate-400">مدة الفيديو</span>
+                <span id="metaDuration" dir="ltr" class="font-mono font-semibold text-slate-100">—</span>
+              </div>
+
+              <div class="studio-tile rounded-xl p-3 flex items-center justify-between gap-3">
+                <span class="text-slate-400">الترميز وقناة الألوان</span>
+                <span id="metaCodecInfo" dir="ltr" class="font-mono text-xs font-semibold text-violetlux-300">—</span>
+              </div>
+
+              <div class="studio-tile rounded-xl p-3 flex items-center justify-between gap-3">
+                <span class="text-slate-400">حالة التحويل</span>
+                <span id="metaStatusBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  <span>جاهز للتحويل</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Alpha Transparency Preservation Switch -->
+            <div class="mt-4 studio-tile rounded-2xl p-3.5 border border-cyanlux-500/25 flex items-center justify-between gap-3">
+              <div>
+                <p class="text-xs sm:text-sm font-bold text-white">الحفاظ على الخلفية الشفافة (Alpha)</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">يُفعّل تلقائياً لملفات MOV المفرغة الخلفية</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                <input type="checkbox" id="preserveAlphaToggle" class="sr-only peer" />
+                <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-cyanlux-500 peer-checked:to-violetlux-600"></div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Convert Action CTA -->
+          <div class="mt-6">
+            <button
+              type="button"
+              id="convertBtn"
+              class="btn-violet-glow w-full py-4 px-6 rounded-2xl text-white font-display font-extrabold text-base sm:text-lg flex items-center justify-center gap-3 min-h-[58px]"
+            >
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>حوّل إلى GIF</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== STAGE 3: LIVE CONVERSION PROGRESS & TELEMETRY ==================== -->
+      <div id="progressCard" class="hidden studio-glass rounded-3xl p-5 sm:p-7 border-cyanlux-400/45 spring-enter">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div class="flex items-center gap-3.5">
+            <div class="relative w-12 h-12 flex items-center justify-center shrink-0">
+              <div class="absolute inset-0 rounded-full border-2 border-violetlux-500/25"></div>
+              <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-cyanlux-400 border-r-violetlux-500 animate-spin"></div>
+              <svg class="w-5 h-5 text-cyanlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 6v6l4 2" stroke-linecap="round" />
+              </svg>
+            </div>
+
+            <div>
+              <h4 id="progressStageTitle" class="font-display font-bold text-sm sm:text-base text-white">
+                جارٍ تهيئة محرك FFmpeg عالي الدقة...
+              </h4>
+              <p id="progressStageDetail" class="text-xs sm:text-sm text-slate-400 mt-0.5">
+                تحليل الإطارات وتوليد لوحة ألوان طبيعية بدون أي تشبع أو فلاتر
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <span id="progressPercentText" dir="ltr" class="font-mono text-2xl sm:text-3xl font-bold text-cyanlux-400">
+              0%
+            </span>
+            <button
+              type="button"
+              id="cancelConvertBtn"
+              class="px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-rose-500/20 border border-slate-700 hover:border-rose-500/40 text-xs font-bold text-slate-300 hover:text-rose-200 transition"
+            >
+              إلغاء
+            </button>
+          </div>
+        </div>
+
+        <!-- Real Progress Bar -->
+        <div class="w-full h-3.5 rounded-full bg-cosmic-950/90 border border-slate-800 overflow-hidden p-0.5">
+          <div
+            id="progressBarFill"
+            class="h-full rounded-full bg-gradient-to-l from-cyanlux-400 via-violetlux-500 to-violetlux-600 transition-all duration-200 ease-out"
+            style="width: 0%"
+          ></div>
+        </div>
+
+        <!-- Real-Time Optimization Telemetry -->
+        <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+          <div class="studio-tile rounded-xl px-3 py-2.5">
+            <span class="text-slate-400 block">مستوى التحسين</span>
+            <span id="telemetryAttempt" dir="ltr" class="font-mono font-bold text-white mt-0.5 block">1 / 8</span>
+          </div>
+          <div class="studio-tile rounded-xl px-3 py-2.5">
+            <span class="text-slate-400 block">الدقة المستهدفة</span>
+            <span id="telemetryDims" dir="ltr" class="font-mono font-bold text-cyanlux-400 mt-0.5 block">—</span>
+          </div>
+          <div class="studio-tile rounded-xl px-3 py-2.5">
+            <span class="text-slate-400 block">معدل الإطارات</span>
+            <span id="telemetryFps" dir="ltr" class="font-mono font-bold text-violetlux-400 mt-0.5 block">—</span>
+          </div>
+          <div class="studio-tile rounded-xl px-3 py-2.5">
+            <span class="text-slate-400 block">الحجم المتوقع / السابق</span>
+            <span id="telemetryEstSize" dir="ltr" class="font-mono font-bold text-slate-200 mt-0.5 block">جارٍ الحساب...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== STAGE 4: RESULT, COMPARISON & DOWNLOAD ==================== -->
+    <section id="resultSection" class="hidden space-y-6 spring-enter">
+
+      <!-- Success Status Banner -->
+      <div id="resultStatusBanner" class="rounded-2xl p-4 sm:p-5 bg-emerald-500/12 border border-emerald-500/40 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+              <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-sm sm:text-base text-emerald-300">
+              تم التحويل بنجاح! حجم ملف GIF النهائي ضمن الحد المسموح (7.5MB)
+            </h3>
+            <p id="resultOptimizationNote" class="text-xs sm:text-sm text-emerald-200/85 mt-0.5">
+              تم الحفاظ على الألوان الطبيعية وتفاصيل الفيديو بدقة عالية
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span id="resultAlphaTag" class="hidden px-2.5 py-1 rounded-lg text-xs font-bold bg-cyanlux-500/20 text-cyanlux-300 border border-cyanlux-400/35">
+            خلفية شفافة Alpha
+          </span>
+          <span id="engineUsedBadge" dir="ltr" class="font-mono text-xs px-2.5 py-1 rounded-lg bg-cosmic-950/75 border border-emerald-500/25 text-emerald-300">
+            FFmpeg.wasm Palette Engine
+          </span>
+        </div>
+      </div>
+
+      <!-- Main Result Card -->
+      <div class="studio-glass rounded-3xl p-4 sm:p-7">
+        <!-- Output Metrics -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div class="studio-tile rounded-2xl p-3.5 sm:p-4 border-cyanlux-500/30">
+            <span class="text-xs text-slate-400 block">حجم الملف النهائي</span>
+            <span id="resFileSize" dir="ltr" class="font-mono text-lg sm:text-2xl font-bold text-cyanlux-400 mt-1 block">0.00 MB</span>
+            <div class="mt-2 w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+              <div id="resSizeQuotaBar" class="h-full bg-gradient-to-r from-emerald-400 to-cyanlux-400 rounded-full" style="width: 50%"></div>
+            </div>
+            <span id="resSizeQuotaText" class="text-[11px] text-slate-400 mt-1 block">من أصل 7.50 MB</span>
+          </div>
+
+          <div class="studio-tile rounded-2xl p-3.5 sm:p-4">
+            <span class="text-xs text-slate-400 block">دقة الصورة</span>
+            <span id="resResolution" dir="ltr" class="font-mono text-lg sm:text-2xl font-bold text-white mt-1 block">—</span>
+            <span class="text-[11px] text-slate-400 mt-1 block">نسبة أبعاد أصلية</span>
+          </div>
+
+          <div class="studio-tile rounded-2xl p-3.5 sm:p-4">
+            <span class="text-xs text-slate-400 block">عدد الإطارات</span>
+            <span id="resFrameCount" dir="ltr" class="font-mono text-lg sm:text-2xl font-bold text-violetlux-400 mt-1 block">—</span>
+            <span class="text-[11px] text-slate-400 mt-1 block">إطار متحرك</span>
+          </div>
+
+          <div class="studio-tile rounded-2xl p-3.5 sm:p-4">
+            <span class="text-xs text-slate-400 block">معدل الإطارات FPS</span>
+            <span id="resFps" dir="ltr" class="font-mono text-lg sm:text-2xl font-bold text-white mt-1 block">—</span>
+            <span class="text-[11px] text-slate-400 mt-1 block">حركة سلسة</span>
+          </div>
+        </div>
+
+        <!-- Comparison Controls & Result Backdrop Switcher -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div class="flex flex-wrap items-center gap-3">
+            <h3 class="font-display text-base sm:text-lg font-extrabold text-white">
+              معاينة GIF والمقارنة البصرية
+            </h3>
+
+            <!-- Result Transparency Backdrop Swatches -->
+            <div class="flex items-center gap-1.5" title="تغيير خلفية المعاينة">
+              <button type="button" data-res-backdrop="bg-checkerboard" class="result-bg-btn w-6 h-6 rounded-lg bg-checkerboard border-2 border-cyanlux-400 transition" aria-label="مربعات الشفافية"></button>
+              <button type="button" data-res-backdrop="bg-backdrop-navy" class="result-bg-btn w-6 h-6 rounded-lg bg-backdrop-navy border border-slate-600 transition" aria-label="كحلي داكن"></button>
+              <button type="button" data-res-backdrop="bg-backdrop-black" class="result-bg-btn w-6 h-6 rounded-lg bg-backdrop-black border border-slate-600 transition" aria-label="أسود نقي"></button>
+              <button type="button" data-res-backdrop="bg-backdrop-white" class="result-bg-btn w-6 h-6 rounded-lg bg-backdrop-white border border-slate-600 transition" aria-label="أبيض نقي"></button>
+            </div>
+          </div>
+
+          <div class="inline-flex rounded-xl p-1 studio-tile">
+            <button
+              type="button"
+              id="modeSingleBtn"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition bg-violetlux-600 text-white"
+            >
+              معاينة GIF النهائي
+            </button>
+            <button
+              type="button"
+              id="modeSliderBtn"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white"
+            >
+              مقارنة بالسحب
+            </button>
+            <button
+              type="button"
+              id="modeSideBySideBtn"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white"
+            >
+              جنباً إلى جنب
+            </button>
+          </div>
+        </div>
+
+        <!-- View 1: Final GIF Preview -->
+        <div id="viewSingleGif" class="result-stage-bg rounded-2xl bg-checkerboard border border-slate-700/80 p-4 sm:p-6 flex flex-col items-center justify-center min-h-[260px]">
+          <img
+            id="finalGifPreview"
+            alt="معاينة ملف GIF الناتج"
+            class="max-w-full max-h-[430px] rounded-xl object-contain"
+          />
+        </div>
+
+        <!-- View 2: Interactive Split Comparison Slider -->
+        <div id="viewSplitCompare" class="hidden">
+          <div id="compareContainer" class="result-stage-bg compare-viewport rounded-2xl bg-checkerboard border border-slate-700/80 w-full max-h-[430px] flex items-center justify-center mx-auto">
+            <!-- Base: Resulting GIF -->
+            <img
+              id="compareGifImg"
+              alt="GIF الناتج"
+              class="w-full max-h-[430px] object-contain block pointer-events-none"
+            />
+
+            <!-- Clipped Overlay: Original Source (Video or Alpha Preview) -->
+            <div id="compareVideoOverlay" class="absolute inset-0 overflow-hidden pointer-events-none" style="clip-path: inset(0 50% 0 0);">
+              <video
+                id="compareOrigVideo"
+                muted
+                loop
+                playsinline
+                class="w-full h-full max-h-[430px] object-contain block"
+              ></video>
+              <img
+                id="compareOrigAlphaImg"
+                alt="المصدر الأصلي الشفاف"
+                class="hidden w-full h-full max-h-[430px] object-contain"
+              />
+            </div>
+
+            <span class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-cosmic-950/90 border border-violetlux-500/40 text-xs font-bold text-violetlux-300 pointer-events-none">
+              الفيديو الأصلي
+            </span>
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-cosmic-950/90 border border-cyanlux-400/40 text-xs font-bold text-cyanlux-300 pointer-events-none">
+              GIF الناتج
+            </span>
+
+            <!-- Handle -->
+            <div
+              id="compareHandle"
+              class="absolute top-0 bottom-0 w-1 bg-cyanlux-400 shadow-[0_0_16px_rgba(34,211,238,0.95)] cursor-ew-resize flex items-center justify-center"
+              style="left: 50%;"
+            >
+              <div class="w-9 h-9 rounded-full bg-cosmic-950 border-2 border-cyanlux-400 text-cyanlux-300 flex items-center justify-center shadow-xl">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                  <path d="M8 9l-3 3 3 3M16 9l3 3-3 3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <p class="text-center text-xs text-slate-400 mt-2">
+            اسحب الفاصل يميناً أو يساراً للمقارنة الدقيقة بين الفيديو الأصلي وملف GIF الناتج
+          </p>
+        </div>
+
+        <!-- View 3: Side-by-Side Comparison -->
+        <div id="viewSideBySide" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="result-stage-bg rounded-2xl bg-checkerboard border border-slate-700/80 p-3">
+            <div class="flex items-center justify-between mb-2 px-2 py-1 rounded-lg bg-cosmic-950/80">
+              <span class="text-xs font-bold text-violetlux-300">الفيديو الأصلي</span>
+              <span id="sideOrigBadge" dir="ltr" class="font-mono text-[11px] text-slate-300">—</span>
+            </div>
+            <video id="sideOrigVideo" muted loop playsinline class="w-full max-h-[320px] rounded-xl object-contain mx-auto"></video>
+            <img id="sideOrigAlphaImg" alt="المصدر الأصلي" class="hidden w-full max-h-[320px] rounded-xl object-contain mx-auto" />
+          </div>
+
+          <div class="result-stage-bg rounded-2xl bg-checkerboard border border-cyanlux-500/40 p-3">
+            <div class="flex items-center justify-between mb-2 px-2 py-1 rounded-lg bg-cosmic-950/80">
+              <span class="text-xs font-bold text-cyanlux-300">GIF الناتج</span>
+              <span id="sideGifBadge" dir="ltr" class="font-mono text-[11px] text-cyanlux-400">—</span>
+            </div>
+            <img id="sideGifImg" alt="GIF الناتج" class="w-full max-h-[320px] rounded-xl object-contain mx-auto" />
+          </div>
+        </div>
+
+        <!-- Hero Download Action & Secondary Buttons -->
+        <div class="mt-7 pt-6 border-t border-slate-800/80 flex flex-col items-center gap-4">
+          <button
+            type="button"
+            id="downloadGifBtn"
+            class="btn-cyan-download w-full sm:w-auto sm:min-w-[350px] py-4 px-8 rounded-2xl text-white font-bold flex flex-col items-center justify-center min-h-[66px]"
+          >
+            <span dir="ltr" class="font-display text-lg sm:text-xl tracking-wider flex items-center gap-2.5">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>DOWNLOAD GIF</span>
+            </span>
+            <span class="text-xs font-normal text-white/95 mt-0.5">تنزيل ملف GIF إلى جهازك فوراً</span>
+          </button>
+
+          <div class="flex flex-wrap items-center justify-center gap-2.5 w-full">
+            <button
+              type="button"
+              id="reconvertBtn"
+              class="px-4 py-2.5 rounded-xl studio-tile hover:border-violetlux-400/50 text-xs sm:text-sm font-bold text-slate-200 transition inline-flex items-center gap-2 min-h-[44px]"
+            >
+              <svg class="w-4 h-4 text-violetlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>إعادة التحويل / تعديل القص</span>
+            </button>
+
+            <button
+              type="button"
+              id="resultNewVideoBtn"
+              class="px-4 py-2.5 rounded-xl studio-tile hover:border-cyanlux-400/50 text-xs sm:text-sm font-bold text-slate-200 transition inline-flex items-center gap-2 min-h-[44px]"
+            >
+              <svg class="w-4 h-4 text-cyanlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 4v16m8-8H4" stroke-linecap="round" />
+              </svg>
+              <span>اختيار فيديو آخر</span>
+            </button>
+
+            <button
+              type="button"
+              id="resultDeleteBtn"
+              class="px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/35 text-xs sm:text-sm font-bold text-rose-300 transition inline-flex items-center gap-2 min-h-[44px]"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>حذف الملف الحالي</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================================================================================== -->
+    <!-- ==================== NEW SECTION: PERMANENT DIRECT LINKS (رابط مباشر | Direct Link) ==================== -->
+    <!-- ==================================================================================== -->
+    <section id="directLinkSection" aria-labelledby="directLinkHeading" class="mt-12 sm:mt-16 pt-10 border-t border-violetlux-500/25 space-y-6">
+      <!-- Section Header -->
+      <div class="text-center max-w-2xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full studio-tile border-cyanlux-400/30 text-xs sm:text-sm font-bold mb-4">
+          <span class="w-2 h-2 rounded-full bg-cyanlux-400"></span>
+          <span class="text-cyanlux-300">رابط مباشر</span>
+          <span class="text-slate-600">|</span>
+          <span dir="ltr" class="font-mono text-violetlux-300">Direct Link</span>
+        </div>
+
+        <h2 id="directLinkHeading" class="font-display text-2xl sm:text-4xl font-black text-white">
+          حوّل ملفاتك إلى روابط مباشرة دائمة
+        </h2>
+        <p class="mt-2.5 text-sm sm:text-base text-slate-300 leading-relaxed">
+          ارفع ملفك واحصل على رابط مباشر يمكنك مشاركته في أي مكان، دون تاريخ انتهاء صلاحية.
+        </p>
+      </div>
+
+      <!-- Direct Link Alert Banner -->
+      <div id="dlAlertBox" class="hidden rounded-2xl p-4 sm:p-5 border transition-all duration-300 spring-enter" role="alert">
+        <div class="flex items-start gap-3">
+          <div id="dlAlertIcon" class="shrink-0 mt-0.5"></div>
+          <div class="flex-1 min-w-0">
+            <h3 id="dlAlertTitle" class="font-bold text-sm sm:text-base"></h3>
+            <p id="dlAlertMsg" class="mt-1 text-xs sm:text-sm leading-relaxed opacity-95"></p>
+          </div>
+          <button type="button" id="dlCloseAlertBtn" aria-label="إغلاق التنبيه" class="shrink-0 p-1.5 rounded-lg hover:bg-white/10 text-slate-300 transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Permanent Upload Studio Card -->
+      <div class="studio-glass rounded-3xl p-4 sm:p-8 space-y-6">
+        <input
+          type="file"
+          id="dlFileInput"
+          accept=".gif,.mp4,.mov,.png,.jpg,.jpeg,.webp,image/gif,video/mp4,video/quicktime,image/png,image/jpeg,image/webp"
+          class="hidden"
+        />
+
+        <!-- Independent Sleek Dropzone -->
+        <div class="dropzone-stage">
+          <div
+            id="dlDropZone"
+            role="button"
+            tabindex="0"
+            aria-label="منطقة رفع الملفات للحصول على رابط مباشر دائم"
+            class="dropzone-card rounded-2xl px-5 py-10 sm:py-12 flex flex-col items-center justify-center text-center cursor-pointer"
+          >
+            <div class="relative mb-5">
+              <div class="absolute inset-0 rounded-full bg-violetlux-500/20 sonar-ring"></div>
+              <div class="relative w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-br from-cyanlux-500/25 via-cosmic-800 to-violetlux-600/35 border border-violetlux-400/40 flex items-center justify-center shadow-2xl">
+                <svg class="w-8 h-8 sm:w-9 sm:h-9 text-cyanlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                  <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+
+            <h3 class="font-display text-lg sm:text-2xl font-extrabold text-white">
+              اسحب ملفك وأفلته هنا لإنشاء رابط دائم
+            </h3>
+            <p class="mt-1.5 text-xs sm:text-sm text-slate-300 max-w-md">
+              أو اختر ملفاً من هاتفك أو الكمبيوتر — يفتح مباشرة في المتصفح وتطبيقات المحادثة دون صفحة وسيطة
+            </p>
+
+            <button
+              type="button"
+              id="dlSelectBtn"
+              class="btn-violet-glow mt-5 px-7 py-3.5 rounded-2xl text-white font-bold text-sm sm:text-base inline-flex items-center gap-2.5 min-h-[48px]"
+            >
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0-12l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>اختيار ملف من الجهاز</span>
+            </button>
+
+            <!-- Supported Formats & Storage Limit Info -->
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-2">
+              <span dir="ltr" class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-violetlux-500/20 text-violetlux-300 border border-violetlux-400/30">GIF</span>
+              <span dir="ltr" class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-cyanlux-500/20 text-cyanlux-300 border border-cyanlux-400/30">MP4</span>
+              <span dir="ltr" class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-cyanlux-500/20 text-cyanlux-300 border border-cyanlux-400/30">MOV</span>
+              <span dir="ltr" class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-violetlux-500/20 text-violetlux-300 border border-violetlux-400/30">PNG</span>
+              <span dir="ltr" class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-violetlux-500/20 text-violetlux-300 border border-violetlux-400/30">JPG</span>
+              <span dir="ltr" class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-violetlux-500/20 text-violetlux-300 border border-violetlux-400/30">JPEG</span>
+              <span dir="ltr" class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-violetlux-500/20 text-violetlux-300 border border-violetlux-400/30">WEBP</span>
+            </div>
+
+            <p class="mt-3 text-[11px] sm:text-xs text-slate-400">
+              الحد الأقصى لحجم الملف للرابط المباشر: <span dir="ltr" class="font-mono font-bold text-cyanlux-400">100 MB</span> • تخزين دائم لا ينتهي تلقائياً
+            </p>
+          </div>
+        </div>
+
+        <!-- Selected File Info + Real Upload Progress + Create Link Button -->
+        <div id="dlSelectedCard" class="hidden studio-tile rounded-2xl p-4 sm:p-6 border border-cyanlux-400/35 space-y-4 spring-enter">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <div class="w-12 h-12 rounded-2xl bg-violetlux-500/20 border border-violetlux-400/35 text-cyanlux-400 flex items-center justify-center shrink-0 font-mono font-bold text-xs" id="dlSelectedTypeBadge">
+                FILE
+              </div>
+              <div class="min-w-0">
+                <p id="dlSelectedName" dir="ltr" class="font-mono text-sm sm:text-base font-bold text-white truncate max-w-[240px] sm:max-w-md">—</p>
+                <div class="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-400">
+                  <span>الحجم: <strong id="dlSelectedSize" dir="ltr" class="font-mono text-cyanlux-400">0.00 MB</strong></span>
+                  <span>•</span>
+                  <span>النوع: <strong id="dlSelectedMime" dir="ltr" class="font-mono text-slate-200">—</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+              <button
+                type="button"
+                id="dlClearSelectedBtn"
+                class="px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-rose-500/20 border border-slate-700 hover:border-rose-500/40 text-xs sm:text-sm font-bold text-slate-300 hover:text-rose-200 transition min-h-[44px]"
+              >
+                إلغاء الاختيار
+              </button>
+
+              <button
+                type="button"
+                id="dlCreateLinkBtn"
+                class="btn-cyan-download px-6 py-2.5 rounded-xl text-white font-display font-extrabold text-sm sm:text-base inline-flex items-center gap-2 min-h-[46px]"
+              >
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>إنشاء الرابط</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Real Upload Progress Bar (Driven by XHR upload.onprogress) -->
+          <div id="dlProgressWrapper" class="hidden pt-3 border-t border-slate-800/80 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span id="dlProgressStatus" class="text-cyanlux-300 font-bold">جارٍ رفع الملف إلى التخزين السحابي الدائم...</span>
+              <span id="dlProgressPercent" dir="ltr" class="font-mono font-bold text-cyanlux-400">0%</span>
+            </div>
+            <div class="w-full h-3 rounded-full bg-cosmic-950 border border-slate-800 overflow-hidden p-0.5">
+              <div
+                id="dlProgressBar"
+                class="h-full rounded-full bg-gradient-to-l from-cyanlux-400 via-violetlux-500 to-violetlux-600 transition-all duration-150"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload Completed Result Box: Direct URL, Copy, Open, Share & Live Media Preview -->
+        <div id="dlResultCard" class="hidden rounded-2xl p-4 sm:p-6 bg-emerald-500/10 border border-emerald-500/40 space-y-5 spring-enter">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <h4 class="font-display font-extrabold text-sm sm:text-base text-emerald-300">
+                تم إنشاء الرابط المباشر الدائم بنجاح!
+              </h4>
+            </div>
+            <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-cosmic-950/80 border border-emerald-500/30 text-emerald-300">
+              دائم • بدون تاريخ انتهاء صلاحية
+            </span>
+          </div>
+
+          <!-- Direct URL Input + Copy / Open / Share Actions -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+            <input
+              type="text"
+              id="dlResultUrl"
+              readonly
+              dir="ltr"
+              class="flex-1 px-4 py-3 rounded-xl bg-cosmic-950/90 border border-cyanlux-400/40 font-mono text-xs sm:text-sm text-cyanlux-300 focus:outline-none select-all"
+              value=""
+            />
+
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                id="dlCopyBtn"
+                class="btn-violet-glow px-4 py-3 rounded-xl text-white text-xs sm:text-sm font-bold inline-flex items-center justify-center gap-1.5 min-h-[44px]"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" />
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                </svg>
+                <span>نسخ الرابط</span>
+              </button>
+
+              <a
+                id="dlOpenBtn"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-4 py-3 rounded-xl studio-tile hover:border-cyanlux-400/60 text-cyanlux-300 text-xs sm:text-sm font-bold inline-flex items-center justify-center gap-1.5 min-h-[44px]"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>فتح الرابط</span>
+              </a>
+
+              <button
+                type="button"
+                id="dlShareBtn"
+                class="px-4 py-3 rounded-xl studio-tile hover:border-violetlux-400/60 text-slate-100 text-xs sm:text-sm font-bold inline-flex items-center justify-center gap-1.5 min-h-[44px]"
+              >
+                <svg class="w-4 h-4 text-violetlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" />
+                </svg>
+                <span>مشاركة</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Social Direct Share Links (Telegram & WhatsApp) -->
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            <span class="text-slate-400">مشاركة سريعة:</span>
+            <a
+              id="dlTelegramShareBtn"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="px-3 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/35 text-sky-300 font-bold transition"
+            >
+              Telegram
+            </a>
+            <a
+              id="dlWhatsappShareBtn"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/35 text-emerald-300 font-bold transition"
+            >
+              WhatsApp
+            </a>
+          </div>
+
+          <!-- Live Direct Media Preview (Loaded Directly from Permanent URL) -->
+          <div id="dlPreviewContainer" class="rounded-2xl bg-checkerboard border border-slate-700/80 p-4 flex flex-col items-center justify-center min-h-[180px]"></div>
+        </div>
+      </div>
+
+      <!-- Uploaded Files Management Panel -->
+      <div class="studio-glass rounded-3xl p-4 sm:p-7">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div class="flex items-center gap-2.5">
+            <svg class="w-5 h-5 text-cyanlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <h3 class="font-display text-base sm:text-lg font-extrabold text-white">
+              إدارة ملفاتك المرفوعة
+            </h3>
+            <span id="dlFilesCount" dir="ltr" class="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-violetlux-500/20 text-violetlux-300 border border-violetlux-400/30">
+              0
+            </span>
+          </div>
+
+          <button
+            type="button"
+            id="dlRefreshListBtn"
+            class="px-3.5 py-2 rounded-xl studio-tile hover:border-cyanlux-400/50 text-xs font-bold text-slate-200 transition inline-flex items-center gap-1.5"
+          >
+            <svg class="w-4 h-4 text-cyanlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>تحديث القائمة</span>
+          </button>
+        </div>
+
+        <div id="dlFilesList" class="space-y-3">
+          <div class="studio-tile rounded-2xl p-6 text-center text-xs sm:text-sm text-slate-400">
+            لا توجد ملفات مرفوعة حالياً. ارفع أي ملف أعلاه للحصول على رابط مباشر دائم.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="mt-auto pt-12 text-center text-xs text-slate-500">
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <span dir="ltr" class="font-display font-extrabold text-slate-400">DAWAHI UPLOAD</span>
+        <span>•</span>
+        <span>معالجة محلية آمنة داخل المتصفح مع مسح تلقائي للذاكرة المؤقتة</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==================== CORE ENGINE: BINARY QUICKTIME PARSER + SAME-ORIGIN FFMPEG.WASM + 8-TIER SMART COMPRESSION ==================== -->
+  <script>
+    (() => {
+      'use strict';
+
+      // Strict Maximum GIF File Size: 7.5 MB (7,864,320 bytes)
+      const MAX_GIF_BYTES = 7864320;
+
+      // Application State
+      const state = {
+        file: null,
+        fileBuffer: null,
+        videoUrl: null,
+        alphaPreviewUrl: null,
+        nativeVideoPlayable: false,
+        hasAlpha: false,
+        codecFourCC: '',
+        codecLabel: '',
+        gifBlob: null,
+        gifUrl: null,
+        width: 0,
+        height: 0,
+        duration: 0,
+        sourceFps: 24,
+        trimStart: 0,
+        trimEnd: 0,
+        isConverting: false,
+        cancelRequested: false,
+        ffmpeg: null,
+        ffmpegReady: false,
+        ffmpegLogs: [],
+        activeWorker: null,
+        comparePercent: 50,
+      };
+
+      // DOM Elements
+      const els = {
+        cursorSpotlight: document.getElementById('cursorSpotlight'),
+
+        stepPill1: document.getElementById('stepPill1'),
+        stepPill2: document.getElementById('stepPill2'),
+        stepPill3: document.getElementById('stepPill3'),
+        stepPill4: document.getElementById('stepPill4'),
+
+        globalAlert: document.getElementById('globalAlert'),
+        globalAlertIcon: document.getElementById('globalAlertIcon'),
+        globalAlertTitle: document.getElementById('globalAlertTitle'),
+        globalAlertMessage: document.getElementById('globalAlertMessage'),
+        globalAlertActions: document.getElementById('globalAlertActions'),
+        closeAlertBtn: document.getElementById('closeAlertBtn'),
+
+        uploadSection: document.getElementById('uploadSection'),
+        dropZone: document.getElementById('dropZone'),
+        videoFileInput: document.getElementById('videoFileInput'),
+        selectFileBtn: document.getElementById('selectFileBtn'),
+
+        workspaceSection: document.getElementById('workspaceSection'),
+        alphaDetectedPill: document.getElementById('alphaDetectedPill'),
+        changeVideoBtn: document.getElementById('changeVideoBtn'),
+        deleteFileBtn: document.getElementById('deleteFileBtn'),
+
+        previewMediaStage: document.getElementById('previewMediaStage'),
+        sourceVideoPreview: document.getElementById('sourceVideoPreview'),
+        alphaProPreviewBox: document.getElementById('alphaProPreviewBox'),
+        alphaProPreviewImg: document.getElementById('alphaProPreviewImg'),
+        alphaProPreviewCaption: document.getElementById('alphaProPreviewCaption'),
+        previewDecodingOverlay: document.getElementById('previewDecodingOverlay'),
+        previewDecodingTitle: document.getElementById('previewDecodingTitle'),
+        previewDecodingSub: document.getElementById('previewDecodingSub'),
+        codecBadge: document.getElementById('codecBadge'),
+
+        trimStartSlider: document.getElementById('trimStartSlider'),
+        trimEndSlider: document.getElementById('trimEndSlider'),
+        trimStartLabel: document.getElementById('trimStartLabel'),
+        trimEndLabel: document.getElementById('trimEndLabel'),
+        selectedDurationLabel: document.getElementById('selectedDurationLabel'),
+        startMinusBtn: document.getElementById('startMinusBtn'),
+        startPlusBtn: document.getElementById('startPlusBtn'),
+        endMinusBtn: document.getElementById('endMinusBtn'),
+        endPlusBtn: document.getElementById('endPlusBtn'),
+        resetTrimBtn: document.getElementById('resetTrimBtn'),
+
+        metaFileName: document.getElementById('metaFileName'),
+        metaFileSize: document.getElementById('metaFileSize'),
+        metaResolution: document.getElementById('metaResolution'),
+        metaDuration: document.getElementById('metaDuration'),
+        metaCodecInfo: document.getElementById('metaCodecInfo'),
+        metaStatusBadge: document.getElementById('metaStatusBadge'),
+        preserveAlphaToggle: document.getElementById('preserveAlphaToggle'),
+        convertBtn: document.getElementById('convertBtn'),
+
+        progressCard: document.getElementById('progressCard'),
+        progressStageTitle: document.getElementById('progressStageTitle'),
+        progressStageDetail: document.getElementById('progressStageDetail'),
+        progressPercentText: document.getElementById('progressPercentText'),
+        progressBarFill: document.getElementById('progressBarFill'),
+        cancelConvertBtn: document.getElementById('cancelConvertBtn'),
+        telemetryAttempt: document.getElementById('telemetryAttempt'),
+        telemetryDims: document.getElementById('telemetryDims'),
+        telemetryFps: document.getElementById('telemetryFps'),
+        telemetryEstSize: document.getElementById('telemetryEstSize'),
+
+        resultSection: document.getElementById('resultSection'),
+        resultStatusBanner: document.getElementById('resultStatusBanner'),
+        resultOptimizationNote: document.getElementById('resultOptimizationNote'),
+        resultAlphaTag: document.getElementById('resultAlphaTag'),
+        engineUsedBadge: document.getElementById('engineUsedBadge'),
+        resFileSize: document.getElementById('resFileSize'),
+        resSizeQuotaBar: document.getElementById('resSizeQuotaBar'),
+        resSizeQuotaText: document.getElementById('resSizeQuotaText'),
+        resResolution: document.getElementById('resResolution'),
+        resFrameCount: document.getElementById('resFrameCount'),
+        resFps: document.getElementById('resFps'),
+
+        modeSingleBtn: document.getElementById('modeSingleBtn'),
+        modeSliderBtn: document.getElementById('modeSliderBtn'),
+        modeSideBySideBtn: document.getElementById('modeSideBySideBtn'),
+        viewSingleGif: document.getElementById('viewSingleGif'),
+        viewSplitCompare: document.getElementById('viewSplitCompare'),
+        viewSideBySide: document.getElementById('viewSideBySide'),
+
+        finalGifPreview: document.getElementById('finalGifPreview'),
+        compareContainer: document.getElementById('compareContainer'),
+        compareGifImg: document.getElementById('compareGifImg'),
+        compareVideoOverlay: document.getElementById('compareVideoOverlay'),
+        compareOrigVideo: document.getElementById('compareOrigVideo'),
+        compareOrigAlphaImg: document.getElementById('compareOrigAlphaImg'),
+        compareHandle: document.getElementById('compareHandle'),
+        sideOrigVideo: document.getElementById('sideOrigVideo'),
+        sideOrigAlphaImg: document.getElementById('sideOrigAlphaImg'),
+        sideGifImg: document.getElementById('sideGifImg'),
+        sideOrigBadge: document.getElementById('sideOrigBadge'),
+        sideGifBadge: document.getElementById('sideGifBadge'),
+
+        downloadGifBtn: document.getElementById('downloadGifBtn'),
+        reconvertBtn: document.getElementById('reconvertBtn'),
+        resultNewVideoBtn: document.getElementById('resultNewVideoBtn'),
+        resultDeleteBtn: document.getElementById('resultDeleteBtn'),
+      };
+
+      // ==================== INTERACTIVE AMBIENT SPOTLIGHT & 3D DROPZONE TILT ====================
+      window.addEventListener('pointermove', (e) => {
+        if (els.cursorSpotlight) {
+          els.cursorSpotlight.style.setProperty('--mouse-x', `${e.clientX}px`);
+          els.cursorSpotlight.style.setProperty('--mouse-y', `${e.clientY}px`);
+        }
+      }, { passive: true });
+
+      els.dropZone.addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        const rect = els.dropZone.getBoundingClientRect();
+        const normX = (e.clientX - rect.left) / rect.width - 0.5;
+        const normY = (e.clientY - rect.top) / rect.height - 0.5;
+        const rotateY = normX * 6;
+        const rotateX = -normY * 6;
+        els.dropZone.style.transform = `rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-2px)`;
+      });
+
+      els.dropZone.addEventListener('pointerleave', () => {
+        els.dropZone.style.transform = '';
+      });
+
+      // ==================== 4-STEP PROGRESS STEPPER ====================
+      function setActiveStep(stepNumber) {
+        const pills = [els.stepPill1, els.stepPill2, els.stepPill3, els.stepPill4];
+        pills.forEach((pill, idx) => {
+          const num = idx + 1;
+          const badge = pill.querySelector('span:first-child');
+          pill.classList.remove(
+            'bg-violetlux-600/25', 'border-violetlux-400/50', 'text-white',
+            'bg-emerald-500/15', 'border-emerald-500/35', 'text-emerald-300',
+            'text-slate-400', 'border-transparent'
+          );
+          badge.classList.remove('bg-violetlux-500', 'bg-emerald-500', 'bg-slate-800', 'text-white', 'text-slate-400');
+
+          if (num < stepNumber) {
+            pill.classList.add('bg-emerald-500/15', 'border-emerald-500/35', 'text-emerald-300');
+            badge.classList.add('bg-emerald-500', 'text-white');
+            badge.textContent = '✓';
+          } else if (num === stepNumber) {
+            pill.classList.add('bg-violetlux-600/25', 'border-violetlux-400/50', 'text-white');
+            badge.classList.add('bg-violetlux-500', 'text-white');
+            badge.textContent = String(num);
+          } else {
+            pill.classList.add('text-slate-400', 'border-transparent');
+            badge.classList.add('bg-slate-800', 'text-slate-400');
+            badge.textContent = String(num);
+          }
+        });
+      }
+
+      // ==================== ALERT BANNER (ZERO alert() / confirm()) ====================
+      function showAlert(type, title, message, actions = []) {
+        els.globalAlert.classList.remove(
+          'hidden',
+          'bg-rose-500/15', 'border-rose-500/45', 'text-rose-200',
+          'bg-amber-500/15', 'border-amber-500/45', 'text-amber-200',
+          'bg-cyanlux-500/15', 'border-cyanlux-500/45', 'text-cyanlux-100'
+        );
+
+        if (type === 'error') {
+          els.globalAlert.classList.add('bg-rose-500/15', 'border-rose-500/45', 'text-rose-200');
+          els.globalAlertIcon.innerHTML = `<svg class="w-6 h-6 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/></svg>`;
+        } else if (type === 'warning') {
+          els.globalAlert.classList.add('bg-amber-500/15', 'border-amber-500/45', 'text-amber-200');
+          els.globalAlertIcon.innerHTML = `<svg class="w-6 h-6 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        } else {
+          els.globalAlert.classList.add('bg-cyanlux-500/15', 'border-cyanlux-500/45', 'text-cyanlux-100');
+          els.globalAlertIcon.innerHTML = `<svg class="w-6 h-6 text-cyanlux-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01" stroke-linecap="round"/></svg>`;
+        }
+
+        els.globalAlertTitle.textContent = title;
+        els.globalAlertMessage.textContent = message;
+
+        els.globalAlertActions.innerHTML = '';
+        if (actions.length > 0) {
+          els.globalAlertActions.classList.remove('hidden');
+          actions.forEach((act) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = act.label;
+            btn.className = 'px-4 py-2 rounded-xl bg-amber-500/25 hover:bg-amber-500/35 border border-amber-400/50 text-xs sm:text-sm font-bold text-white transition';
+            btn.addEventListener('click', act.onClick);
+            els.globalAlertActions.appendChild(btn);
+          });
+        } else {
+          els.globalAlertActions.classList.add('hidden');
+        }
+
+        els.globalAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function hideAlert() {
+        els.globalAlert.classList.add('hidden');
+        els.globalAlertActions.innerHTML = '';
+      }
+
+      els.closeAlertBtn.addEventListener('click', hideAlert);
+
+      // ==================== TRANSPARENCY BACKDROP SWITCHERS ====================
+      const BACKDROP_CLASSES = ['bg-checkerboard', 'bg-backdrop-navy', 'bg-backdrop-black', 'bg-backdrop-white'];
+
+      document.querySelectorAll('.preview-bg-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const chosen = btn.getAttribute('data-backdrop');
+          els.previewMediaStage.classList.remove(...BACKDROP_CLASSES);
+          els.previewMediaStage.classList.add(chosen);
+
+          document.querySelectorAll('.preview-bg-btn').forEach((b) => {
+            b.classList.remove('border-2', 'border-cyanlux-400');
+            b.classList.add('border', 'border-slate-600');
+          });
+          btn.classList.remove('border', 'border-slate-600');
+          btn.classList.add('border-2', 'border-cyanlux-400');
+        });
+      });
+
+      document.querySelectorAll('.result-bg-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const chosen = btn.getAttribute('data-res-backdrop');
+          document.querySelectorAll('.result-stage-bg').forEach((stage) => {
+            stage.classList.remove(...BACKDROP_CLASSES);
+            stage.classList.add(chosen);
+          });
+
+          document.querySelectorAll('.result-bg-btn').forEach((b) => {
+            b.classList.remove('border-2', 'border-cyanlux-400');
+            b.classList.add('border', 'border-slate-600');
+          });
+          btn.classList.remove('border', 'border-slate-600');
+          btn.classList.add('border-2', 'border-cyanlux-400');
+        });
+      });
+
+      // ==================== FORMATTING & MEMORY CLEANUP ====================
+      function formatBytesToMB(bytes) {
+        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+      }
+
+      function setStatusBadge(mode, label) {
+        const map = {
+          ready: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+          processing: 'bg-cyanlux-500/15 text-cyanlux-300 border-cyanlux-500/35',
+          success: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40',
+          error: 'bg-rose-500/15 text-rose-300 border-rose-500/35',
+        };
+        const dotMap = {
+          ready: 'bg-emerald-400',
+          processing: 'bg-cyanlux-400 animate-ping',
+          success: 'bg-emerald-400',
+          error: 'bg-rose-400',
+        };
+        els.metaStatusBadge.className = `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border ${map[mode] || map.ready}`;
+        els.metaStatusBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${dotMap[mode] || dotMap.ready}"></span><span>${label}</span>`;
+      }
+
+      function cleanupGifMemory() {
+        if (state.gifUrl) {
+          URL.revokeObjectURL(state.gifUrl);
+          state.gifUrl = null;
+        }
+        state.gifBlob = null;
+        els.finalGifPreview.removeAttribute('src');
+        els.compareGifImg.removeAttribute('src');
+        els.sideGifImg.removeAttribute('src');
+      }
+
+      function cleanupAllMemory() {
+        if (state.activeWorker) {
+          state.activeWorker.terminate();
+          state.activeWorker = null;
+        }
+        cleanupGifMemory();
+        if (state.videoUrl) {
+          URL.revokeObjectURL(state.videoUrl);
+          state.videoUrl = null;
+        }
+        if (state.alphaPreviewUrl) {
+          URL.revokeObjectURL(state.alphaPreviewUrl);
+          state.alphaPreviewUrl = null;
+        }
+
+        els.sourceVideoPreview.pause();
+        els.sourceVideoPreview.removeAttribute('src');
+        els.sourceVideoPreview.load();
+
+        els.alphaProPreviewImg.removeAttribute('src');
+        els.compareOrigVideo.pause();
+        els.compareOrigVideo.removeAttribute('src');
+        els.compareOrigAlphaImg.removeAttribute('src');
+        els.sideOrigVideo.pause();
+        els.sideOrigVideo.removeAttribute('src');
+        els.sideOrigAlphaImg.removeAttribute('src');
+
+        state.file = null;
+        state.fileBuffer = null;
+        state.nativeVideoPlayable = false;
+        state.hasAlpha = false;
+        state.codecFourCC = '';
+        state.codecLabel = '';
+        state.width = 0;
+        state.height = 0;
+        state.duration = 0;
+        state.sourceFps = 24;
+        state.trimStart = 0;
+        state.trimEnd = 0;
+        state.isConverting = false;
+        state.cancelRequested = false;
+        els.videoFileInput.value = '';
+      }
+
+      function resetToUploadScreen() {
+        cleanupAllMemory();
+        hideAlert();
+        setActiveStep(1);
+        els.progressCard.classList.add('hidden');
+        els.resultSection.classList.add('hidden');
+        els.workspaceSection.classList.add('hidden');
+        els.uploadSection.classList.remove('hidden');
+      }
+
+      // ==================== 1. BINARY QUICKTIME / MP4 ATOM PARSER ====================
+      // Parses QuickTime/MP4 boxes (ftyp, moov, mvhd, trak, tkhd, mdia, minf, stbl, stsd)
+      // to detect ProRes 4444 ('ap4h', 'ap4x'), QuickTime RLE ('rle '), PNG ('png '),
+      // HEVC Alpha ('hvc1'/'hev1'), bit depth = 32 (RGBA), width, height, and duration.
+      function inspectQuickTimeAtoms(arrayBuffer) {
+        const view = new DataView(arrayBuffer);
+        const len = view.byteLength;
+        const result = {
+          isValidContainer: false,
+          majorBrand: '',
+          codecFourCC: '',
+          codecLabel: '',
+          hasAlpha: false,
+          bitDepth: 24,
+          width: 0,
+          height: 0,
+          duration: 0,
+        };
+
+        if (len < 16) return result;
+
+        function readFourCC(offset) {
+          if (offset + 4 > len) return '';
+          return String.fromCharCode(
+            view.getUint8(offset),
+            view.getUint8(offset + 1),
+            view.getUint8(offset + 2),
+            view.getUint8(offset + 3)
+          );
+        }
+
+        const CONTAINER_BOXES = new Set([
+          'moov', 'trak', 'mdia', 'minf', 'stbl', 'dinf', 'edts', 'udta', 'meta'
+        ]);
+
+        function walkBoxes(start, end) {
+          let pos = start;
+          while (pos + 8 <= end) {
+            let boxSize = view.getUint32(pos, false);
+            const boxType = readFourCC(pos + 4);
+            let headerSize = 8;
+
+            if (boxSize === 1) {
+              if (pos + 16 > end) break;
+              const hi = view.getUint32(pos + 8, false);
+              const lo = view.getUint32(pos + 12, false);
+              boxSize = hi * 4294967296 + lo;
+              headerSize = 16;
+            } else if (boxSize === 0) {
+              boxSize = end - pos;
+            }
+
+            if (boxSize < headerSize || pos + boxSize > end) break;
+
+            const bodyStart = pos + headerSize;
+            const bodyEnd = pos + boxSize;
+
+            if (boxType === 'ftyp') {
+              result.isValidContainer = true;
+              result.majorBrand = readFourCC(bodyStart);
+            } else if (boxType === 'mvhd') {
+              if (bodyStart + 20 <= bodyEnd) {
+                const version = view.getUint8(bodyStart);
+                if (version === 1 && bodyStart + 32 <= bodyEnd) {
+                  const timescale = view.getUint32(bodyStart + 20, false);
+                  const durHi = view.getUint32(bodyStart + 24, false);
+                  const durLo = view.getUint32(bodyStart + 28, false);
+                  const dur = durHi * 4294967296 + durLo;
+                  if (timescale > 0) result.duration = dur / timescale;
+                } else {
+                  const timescale = view.getUint32(bodyStart + 12, false);
+                  const dur = view.getUint32(bodyStart + 16, false);
+                  if (timescale > 0) result.duration = dur / timescale;
+                }
+              }
+            } else if (boxType === 'tkhd') {
+              if (bodyStart + 84 <= bodyEnd) {
+                const version = view.getUint8(bodyStart);
+                const dimOffset = version === 1 ? bodyStart + 88 : bodyStart + 76;
+                if (dimOffset + 8 <= bodyEnd) {
+                  const w = view.getUint32(dimOffset, false) / 65536;
+                  const h = view.getUint32(dimOffset + 4, false) / 65536;
+                  if (w > 0 && h > 0 && result.width === 0) {
+                    result.width = Math.round(w);
+                    result.height = Math.round(h);
+                  }
+                }
+              }
+            } else if (boxType === 'stsd') {
+              // FullBox: 4 bytes version/flags + 4 bytes entryCount
+              if (bodyStart + 16 <= bodyEnd) {
+                const entryCount = view.getUint32(bodyStart + 4, false);
+                let entryPos = bodyStart + 8;
+                for (let i = 0; i < entryCount && entryPos + 8 <= bodyEnd; i++) {
+                  const entrySize = view.getUint32(entryPos, false);
+                  const fourCC = readFourCC(entryPos + 4);
+                  if (entrySize < 16 || entryPos + entrySize > bodyEnd) break;
+
+                  const videoCodecs = new Set([
+                    'ap4h', 'ap4x', 'rle ', 'png ', 'hvc1', 'hev1',
+                    'avc1', 'avc3', 'apch', 'apcn', 'apcs', 'apco', 'mp4v', 'vp09', 'av01'
+                  ]);
+
+                  if (videoCodecs.has(fourCC) || entrySize >= 86) {
+                    // Check VisualSampleEntry fields (width at +32, height at +34, depth at +82 from entryPos)
+                    if (entryPos + 84 <= entryPos + entrySize) {
+                      const vw = view.getUint16(entryPos + 32, false);
+                      const vh = view.getUint16(entryPos + 34, false);
+                      const depth = view.getUint16(entryPos + 82, false);
+
+                      if (vw > 0 && vh > 0 && (videoCodecs.has(fourCC) || !result.codecFourCC)) {
+                        result.codecFourCC = fourCC;
+                        result.width = vw;
+                        result.height = vh;
+                        result.bitDepth = depth;
+                        if (depth === 32) {
+                          result.hasAlpha = true;
+                        }
+                      }
+                    }
+
+                    // Scan sub-boxes inside VisualSampleEntry for 'vexu' / 'alpi' / 'colr' alpha markers
+                    if (entryPos + 86 < entryPos + entrySize) {
+                      walkBoxes(entryPos + 86, entryPos + entrySize);
+                    }
+                  }
+                  entryPos += entrySize;
+                }
+              }
+            } else if (boxType === 'vexu' || boxType === 'alpi') {
+              // Video Extended Usage / Alpha Info box (HEVC with Alpha in MOV)
+              result.hasAlpha = true;
+            } else if (CONTAINER_BOXES.has(boxType)) {
+              const childStart = boxType === 'meta' ? bodyStart + 4 : bodyStart;
+              if (childStart < bodyEnd) {
+                walkBoxes(childStart, bodyEnd);
+              }
+            }
+
+            pos += boxSize;
+          }
+        }
+
+        walkBoxes(0, len);
+
+        const cc = result.codecFourCC;
+        if (cc === 'ap4h' || cc === 'ap4x') {
+          result.hasAlpha = true;
+          result.codecLabel = `Apple ProRes 4444 (${cc}) • Alpha`;
+        } else if (cc === 'rle ') {
+          result.hasAlpha = true;
+          result.codecLabel = 'QuickTime Animation RLE • Alpha';
+        } else if (cc === 'png ') {
+          result.hasAlpha = true;
+          result.codecLabel = 'QuickTime PNG • Alpha';
+        } else if (cc === 'hvc1' || cc === 'hev1') {
+          result.codecLabel = result.hasAlpha ? `HEVC Alpha (${cc})` : `HEVC / H.265 (${cc})`;
+        } else if (cc === 'avc1' || cc === 'avc3') {
+          result.codecLabel = `H.264 / AVC (${cc})`;
+        } else if (cc === 'apch' || cc === 'apcn' || cc === 'apcs' || cc === 'apco') {
+          result.codecLabel = `Apple ProRes 422 (${cc})`;
+        } else if (cc) {
+          result.codecLabel = result.hasAlpha ? `${cc.toUpperCase()} • Alpha` : cc.toUpperCase();
+        } else {
+          result.codecLabel = 'QuickTime / MP4';
+        }
+
+        return result;
+      }
+
+      // ==================== 2. SELF-CONTAINED SAME-ORIGIN FFMPEG.WASM ENGINE ====================
+      // Builds a same-origin Blob Worker around @ffmpeg/core@0.12.6 UMD so FFmpeg runs reliably
+      // in ANY environment (Netlify, Vercel, Safari, Chrome, Mobile, iframes) without cross-origin Worker errors.
+      const FFMPEG_WORKER_CODE = `
+        'use strict';
+        let ffmpeg = null;
+
+        self.onmessage = async ({ data: { id, type, data } }) => {
+          try {
+            switch (type) {
+              case 'LOAD': {
+                const { coreURL, wasmURL } = data;
+                self.importScripts(coreURL);
+                if (typeof self.createFFmpegCore !== 'function') {
+                  throw new Error('FAILED_TO_INIT_FFMPEG_CORE');
+                }
+                const configPayload = btoa(JSON.stringify({ wasmURL, workerURL: '' }));
+                ffmpeg = await self.createFFmpegCore({
+                  mainScriptUrlOrBlob: coreURL + '#' + configPayload,
+                });
+                ffmpeg.setLogger((logObj) => {
+                  self.postMessage({ type: 'LOG', data: logObj });
+                });
+                ffmpeg.setProgress((progObj) => {
+                  self.postMessage({ type: 'PROGRESS', data: progObj });
+                });
+                self.postMessage({ id, type: 'LOAD', data: true });
+                break;
+              }
+              case 'EXEC': {
+                const { args, timeout = -1 } = data;
+                ffmpeg.setTimeout(timeout);
+                ffmpeg.exec(...args);
+                const ret = ffmpeg.ret;
+                ffmpeg.reset();
+                self.postMessage({ id, type: 'EXEC', data: ret });
+                break;
+              }
+              case 'WRITE_FILE': {
+                const { path, data: fileData } = data;
+                ffmpeg.FS.writeFile(path, fileData);
+                self.postMessage({ id, type: 'WRITE_FILE', data: true });
+                break;
+              }
+              case 'READ_FILE': {
+                const { path, encoding } = data;
+                const out = ffmpeg.FS.readFile(path, { encoding });
+                const transfer = out && out.buffer ? [out.buffer] : [];
+                self.postMessage({ id, type: 'READ_FILE', data: out }, transfer);
+                break;
+              }
+              case 'DELETE_FILE': {
+                const { path } = data;
+                ffmpeg.FS.unlink(path);
+                self.postMessage({ id, type: 'DELETE_FILE', data: true });
+                break;
+              }
+              default:
+                throw new Error('UNKNOWN_FFMPEG_CMD: ' + type);
+            }
+          } catch (err) {
+            self.postMessage({
+              id,
+              type: 'ERROR',
+              data: err && err.message ? err.message : String(err),
+            });
+          }
+        };
+      `;
+
+      class SameOriginFFmpegClient {
+        constructor() {
+          this.worker = null;
+          this.msgId = 0;
+          this.pending = new Map();
+          this.logListeners = new Set();
+          this.progressListeners = new Set();
+        }
+
+        onLog(fn) {
+          this.logListeners.add(fn);
+        }
+
+        offLog(fn) {
+          this.logListeners.delete(fn);
+        }
+
+        onProgress(fn) {
+          this.progressListeners.add(fn);
+        }
+
+        offProgress(fn) {
+          this.progressListeners.delete(fn);
+        }
+
+        _send(type, data, transfer = []) {
+          return new Promise((resolve, reject) => {
+            const id = ++this.msgId;
+            this.pending.set(id, { resolve, reject });
+            this.worker.postMessage({ id, type, data }, transfer);
+          });
+        }
+
+        async load() {
+          const workerBlob = new Blob([FFMPEG_WORKER_CODE], { type: 'text/javascript' });
+          const workerBlobUrl = URL.createObjectURL(workerBlob);
+          this.worker = new Worker(workerBlobUrl);
+          URL.revokeObjectURL(workerBlobUrl);
+
+          this.worker.onmessage = ({ data: { id, type, data } }) => {
+            if (type === 'LOG') {
+              this.logListeners.forEach((fn) => fn(data));
+              return;
+            }
+            if (type === 'PROGRESS') {
+              this.progressListeners.forEach((fn) => fn(data));
+              return;
+            }
+            const job = this.pending.get(id);
+            if (!job) return;
+            this.pending.delete(id);
+            if (type === 'ERROR') {
+              job.reject(new Error(data));
+            } else {
+              job.resolve(data);
+            }
+          };
+
+          this.worker.onerror = (err) => {
+            this.pending.forEach((job) => job.reject(err));
+            this.pending.clear();
+          };
+
+          const mirrors = [
+            'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd',
+            'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd',
+          ];
+
+          let lastErr = null;
+          for (const base of mirrors) {
+            try {
+              const [coreRes, wasmRes] = await Promise.all([
+                fetch(`${base}/ffmpeg-core.js`),
+                fetch(`${base}/ffmpeg-core.wasm`),
+              ]);
+              if (!coreRes.ok || !wasmRes.ok) {
+                throw new Error('CDN_FETCH_FAILED');
+              }
+              const [coreBuf, wasmBuf] = await Promise.all([
+                coreRes.arrayBuffer(),
+                wasmRes.arrayBuffer(),
+              ]);
+
+              const coreURL = URL.createObjectURL(new Blob([coreBuf], { type: 'text/javascript' }));
+              const wasmURL = URL.createObjectURL(new Blob([wasmBuf], { type: 'application/wasm' }));
+
+              await this._send('LOAD', { coreURL, wasmURL });
+              return true;
+            } catch (err) {
+              lastErr = err;
+            }
+          }
+          throw lastErr || new Error('FFMPEG_LOAD_FAILED');
+        }
+
+        writeFile(path, uint8Array) {
+          const copy = new Uint8Array(uint8Array);
+          return this._send('WRITE_FILE', { path, data: copy }, [copy.buffer]);
+        }
+
+        readFile(path) {
+          return this._send('READ_FILE', { path });
+        }
+
+        deleteFile(path) {
+          return this._send('DELETE_FILE', { path }).catch(() => false);
+        }
+
+        exec(args, timeout = -1) {
+          return this._send('EXEC', { args, timeout });
+        }
+
+        terminate() {
+          if (this.worker) {
+            this.worker.terminate();
+            this.worker = null;
+          }
+          this.pending.clear();
+        }
+      }
+
+      async function ensureFFmpegLoaded() {
+        if (state.ffmpegReady && state.ffmpeg) {
+          return state.ffmpeg;
+        }
+        const client = new SameOriginFFmpegClient();
+        await client.load();
+        state.ffmpeg = client;
+        state.ffmpegReady = true;
+        return client;
+      }
+
+      // Parse FFmpeg stream metadata from logs (especially for ProRes 4444 / RLE / PNG-in-MOV)
+      function parseFFmpegStreamLogs(logs) {
+        const joined = logs.join('\n');
+        const info = {
+          width: 0,
+          height: 0,
+          duration: 0,
+          fps: 24,
+          pixFmt: '',
+          hasAlpha: false,
+        };
+
+        const durMatch = joined.match(/Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)/);
+        if (durMatch) {
+          info.duration =
+            parseInt(durMatch[1], 10) * 3600 +
+            parseInt(durMatch[2], 10) * 60 +
+            parseFloat(durMatch[3]);
+        }
+
+        const videoLineMatch = joined.match(/Stream\s+#\d+:\d+.*Video:\s*([^\n]+)/);
+        if (videoLineMatch) {
+          const line = videoLineMatch[1];
+          const dimMatch = line.match(/,\s*(\d{2,5})x(\d{2,5})[\s,]/);
+          if (dimMatch) {
+            info.width = parseInt(dimMatch[1], 10);
+            info.height = parseInt(dimMatch[2], 10);
+          }
+
+          const fpsMatch = line.match(/(\d+(?:\.\d+)?)\s*fps/);
+          if (fpsMatch) {
+            info.fps = Math.max(1, Math.min(60, Math.round(parseFloat(fpsMatch[1]))));
+          }
+
+          // Check alpha pixel formats: yuva444p10le, yuva420p, rgba, bgra, argb, abgr, gbrap, ya8
+          const alphaPixMatch = line.match(/\b(yuva\w*|rgba\w*|bgra\w*|argb\w*|abgr\w*|gbrap\w*|ya8\w*|ya16\w*)\b/);
+          if (alphaPixMatch) {
+            info.pixFmt = alphaPixMatch[1];
+            info.hasAlpha = true;
+          }
+        }
+
+        return info;
+      }
+
+      // ==================== 3. FILE SELECTION & DUAL PROBE (NATIVE + FFMPEG ALPHA DECODER) ====================
+      function isAllowedVideoFile(file) {
+        if (!file) return false;
+        const nameLower = file.name.toLowerCase();
+        const extValid = nameLower.endsWith('.mp4') || nameLower.endsWith('.mov');
+        const mimeValid =
+          file.type === 'video/mp4' ||
+          file.type === 'video/quicktime' ||
+          file.type === 'video/x-m4v' ||
+          file.type === '';
+        return extValid && mimeValid;
+      }
+
+      function probeNativeVideoElement(url) {
+        return new Promise((resolve) => {
+          const v = document.createElement('video');
+          v.preload = 'metadata';
+          v.muted = true;
+          v.playsInline = true;
+
+          const timer = setTimeout(() => {
+            done(null);
+          }, 5000);
+
+          function done(res) {
+            clearTimeout(timer);
+            v.onloadedmetadata = null;
+            v.onerror = null;
+            v.removeAttribute('src');
+            v.load();
+            resolve(res);
+          }
+
+          v.onloadedmetadata = () => {
+            if (v.videoWidth > 0 && v.videoHeight > 0 && Number.isFinite(v.duration) && v.duration > 0) {
+              done({
+                width: v.videoWidth,
+                height: v.videoHeight,
+                duration: v.duration,
+              });
+            } else {
+              done(null);
+            }
+          };
+
+          v.onerror = () => done(null);
+          v.src = url;
+        });
+      }
+
+      async function handleFileSelected(file) {
+        if (!file) return;
+        hideAlert();
+
+        if (!isAllowedVideoFile(file)) {
+          showAlert(
+            'error',
+            'صيغة الملف غير مدعومة',
+            'يرجى اختيار ملف فيديو بصيغة MP4 أو MOV فقط (بما في ذلك ملفات MOV الشفافة).'
+          );
+          return;
+        }
+
+        cleanupAllMemory();
+
+        const objectUrl = URL.createObjectURL(file);
+        const arrayBuffer = await file.arrayBuffer();
+
+        // Step A: Instant Binary QuickTime/MP4 Atom Inspection
+        const atomInfo = inspectQuickTimeAtoms(arrayBuffer);
+
+        state.file = file;
+        state.fileBuffer = arrayBuffer;
+        state.videoUrl = objectUrl;
+        state.hasAlpha = atomInfo.hasAlpha;
+        state.codecFourCC = atomInfo.codecFourCC;
+        state.codecLabel = atomInfo.codecLabel;
+
+        // Step B: Test if browser <video> tag can natively decode this video
+        const nativeMeta = await probeNativeVideoElement(objectUrl);
+        state.nativeVideoPlayable = Boolean(nativeMeta);
+
+        if (nativeMeta) {
+          state.width = nativeMeta.width;
+          state.height = nativeMeta.height;
+          state.duration = nativeMeta.duration;
+        } else if (atomInfo.width > 0 && atomInfo.height > 0 && atomInfo.duration > 0) {
+          state.width = atomInfo.width;
+          state.height = atomInfo.height;
+          state.duration = atomInfo.duration;
+        }
+
+        // Transition to Studio Workspace (Step 2)
+        setActiveStep(2);
+        els.uploadSection.classList.add('hidden');
+        els.resultSection.classList.add('hidden');
+        els.progressCard.classList.add('hidden');
+        els.workspaceSection.classList.remove('hidden');
+
+        // Configure Alpha Toggle & Badges
+        els.preserveAlphaToggle.checked = state.hasAlpha;
+        if (state.hasAlpha) {
+          els.alphaDetectedPill.classList.remove('hidden');
+          els.alphaDetectedPill.classList.add('inline-flex');
+        } else {
+          els.alphaDetectedPill.classList.add('hidden');
+          els.alphaDetectedPill.classList.remove('inline-flex');
+        }
+
+        const ext = file.name.split('.').pop().toUpperCase();
+        els.codecBadge.textContent = atomInfo.codecFourCC ? `${ext} • ${atomInfo.codecFourCC}` : ext;
+        els.metaFileName.textContent = file.name;
+        els.metaFileName.title = file.name;
+        els.metaFileSize.textContent = formatBytesToMB(file.size);
+        els.metaCodecInfo.textContent = state.codecLabel || ext;
+
+        // If native <video> can play it AND it's not an opaque-background ProRes/RLE stream:
+        if (state.nativeVideoPlayable && !state.hasAlpha) {
+          els.alphaProPreviewBox.classList.add('hidden');
+          els.previewDecodingOverlay.classList.add('hidden');
+          els.sourceVideoPreview.classList.remove('hidden');
+          els.sourceVideoPreview.src = objectUrl;
+
+          populateWorkspaceDimensionsAndTrimmer();
+          setStatusBadge('ready', 'جاهز للتحويل');
+          els.convertBtn.disabled = false;
+        } else {
+          // Engage FFmpeg Alpha Pro Decoder for Transparent MOV (ProRes 4444, RLE, PNG-in-MOV, HEVC Alpha)
+          await buildFFmpegAlphaPreview();
+        }
+      }
+
+      async function buildFFmpegAlphaPreview() {
+        els.sourceVideoPreview.classList.add('hidden');
+        els.alphaProPreviewBox.classList.add('hidden');
+        els.previewDecodingOverlay.classList.remove('hidden');
+        els.previewDecodingTitle.textContent = 'جارٍ تهيئة محرك FFmpeg Alpha Pro...';
+        els.previewDecodingSub.textContent = 'فك ترميز ملف MOV الشفاف واستخراج قناة الشفافية (Alpha Channel)';
+        els.convertBtn.disabled = true;
+        setStatusBadge('processing', 'جارٍ تحليل الفيديو الشفاف...');
+
+        if (state.width > 0 && state.height > 0 && state.duration > 0) {
+          populateWorkspaceDimensionsAndTrimmer();
+        }
+
+        try {
+          const ffmpeg = await ensureFFmpegLoaded();
+          const ext = state.file.name.toLowerCase().endsWith('.mov') ? 'mov' : 'mp4';
+          const inputName = `probe_in.${ext}`;
+          const logs = [];
+          const logFn = ({ message }) => logs.push(message);
+          ffmpeg.onLog(logFn);
+
+          await ffmpeg.writeFile(inputName, new Uint8Array(state.fileBuffer));
+
+          // Probe exact stream metadata via FFmpeg
+          await ffmpeg.exec(['-i', inputName]);
+          ffmpeg.offLog(logFn);
+
+          const parsed = parseFFmpegStreamLogs(logs);
+          if (parsed.width > 0 && parsed.height > 0) {
+            state.width = parsed.width;
+            state.height = parsed.height;
+          }
+          if (parsed.duration > 0) {
+            state.duration = parsed.duration;
+          }
+          if (parsed.fps > 0) {
+            state.sourceFps = parsed.fps;
+          }
+          if (parsed.hasAlpha) {
+            state.hasAlpha = true;
+            els.preserveAlphaToggle.checked = true;
+            els.alphaDetectedPill.classList.remove('hidden');
+            els.alphaDetectedPill.classList.add('inline-flex');
+            els.metaCodecInfo.textContent = `${state.codecLabel} (${parsed.pixFmt})`;
+          }
+
+          if (!state.width || !state.height || !state.duration) {
+            await ffmpeg.deleteFile(inputName);
+            throw new Error('INVALID_STREAM_DIMENSIONS');
+          }
+
+          populateWorkspaceDimensionsAndTrimmer();
+
+          // Render transparent animated WebP preview (or PNG fallback) so user sees true transparency!
+          els.previewDecodingTitle.textContent = 'جارٍ إنشاء معاينة شفافة حية...';
+          els.previewDecodingSub.textContent = 'عرض المحتوى المفرغ فوق خلفية الشفافية التفاعلية';
+
+          const previewW = Math.min(state.width, 540);
+          const previewDur = Math.min(state.duration, 6.0);
+          let previewBlob = null;
+
+          // Attempt animated WebP with alpha channel first
+          const webpExit = await ffmpeg.exec([
+            '-t', previewDur.toFixed(2),
+            '-i', inputName,
+            '-vf', `fps=12,scale=${previewW}:-2:flags=lanczos,format=rgba`,
+            '-c:v', 'libwebp',
+            '-lossless', '0',
+            '-q:v', '78',
+            '-loop', '0',
+            '-an',
+            '-y', 'preview.webp'
+          ]);
+
+          if (webpExit === 0) {
+            try {
+              const webpBytes = await ffmpeg.readFile('preview.webp');
+              if (webpBytes && webpBytes.byteLength > 100) {
+                previewBlob = new Blob([webpBytes], { type: 'image/webp' });
+              }
+            } catch (_) {}
+            await ffmpeg.deleteFile('preview.webp');
+          }
+
+          // Fallback to high-res RGBA PNG frame if animated WebP encoder is unavailable
+          if (!previewBlob) {
+            const seekPos = Math.min(state.duration * 0.25, Math.max(0, state.duration - 0.05));
+            await ffmpeg.exec([
+              '-ss', seekPos.toFixed(2),
+              '-i', inputName,
+              '-vframes', '1',
+              '-vf', `scale=${previewW}:-2:flags=lanczos,format=rgba`,
+              '-y', 'preview.png'
+            ]);
+            const pngBytes = await ffmpeg.readFile('preview.png');
+            previewBlob = new Blob([pngBytes], { type: 'image/png' });
+            await ffmpeg.deleteFile('preview.png');
+          }
+
+          await ffmpeg.deleteFile(inputName);
+
+          if (state.alphaPreviewUrl) {
+            URL.revokeObjectURL(state.alphaPreviewUrl);
+          }
+          state.alphaPreviewUrl = URL.createObjectURL(previewBlob);
+
+          els.alphaProPreviewImg.src = state.alphaPreviewUrl;
+          els.alphaProPreviewCaption.textContent = state.hasAlpha
+            ? 'معاينة الشفافية الحقيقية (Alpha Channel) • جرّب أزرار الخلفية أعلاه'
+            : 'معاينة الفيديو عبر محرك FFmpeg Pro';
+
+          els.previewDecodingOverlay.classList.add('hidden');
+          els.alphaProPreviewBox.classList.remove('hidden');
+
+          setStatusBadge('ready', 'جاهز للتحويل');
+          els.convertBtn.disabled = false;
+        } catch (err) {
+          els.previewDecodingOverlay.classList.add('hidden');
+          setStatusBadge('error', 'تعذّر فك ترميز الملف');
+          showAlert(
+            'error',
+            'تعذّر فك ترميز ملف الفيديو',
+            'تأكد من اتصالك بالإنترنت لتحميل نواة فك الترميز (FFmpeg.wasm) لمرة واحدة، أو تأكد من سلامة ملف MOV/MP4.'
+          );
+        }
+      }
+
+      function populateWorkspaceDimensionsAndTrimmer() {
+        els.metaResolution.textContent = `${state.width} × ${state.height}`;
+        els.metaDuration.textContent = `${state.duration.toFixed(2)} ثانية`;
+
+        state.trimStart = 0;
+        state.trimEnd = Number(state.duration.toFixed(2));
+
+        const maxDur = Number(state.duration.toFixed(2));
+        els.trimStartSlider.min = '0';
+        els.trimStartSlider.max = String(maxDur);
+        els.trimStartSlider.value = '0';
+
+        els.trimEndSlider.min = '0';
+        els.trimEndSlider.max = String(maxDur);
+        els.trimEndSlider.value = String(maxDur);
+        updateTrimUI(false);
+      }
+
+      // ==================== CLIP TRIMMER CONTROLS ====================
+      function updateTrimUI(seekPreview = true, seekTarget = null) {
+        const minGap = Math.min(0.2, state.duration * 0.1);
+        if (state.trimStart < 0) state.trimStart = 0;
+        if (state.trimEnd > state.duration) state.trimEnd = state.duration;
+        if (state.trimEnd - state.trimStart < minGap) {
+          if (seekTarget === 'start') {
+            state.trimStart = Math.max(0, state.trimEnd - minGap);
+          } else {
+            state.trimEnd = Math.min(state.duration, state.trimStart + minGap);
+          }
+        }
+
+        els.trimStartSlider.value = state.trimStart.toFixed(2);
+        els.trimEndSlider.value = state.trimEnd.toFixed(2);
+        els.trimStartLabel.textContent = `${state.trimStart.toFixed(2)}s`;
+        els.trimEndLabel.textContent = `${state.trimEnd.toFixed(2)}s`;
+
+        const clipLen = Math.max(0.1, state.trimEnd - state.trimStart);
+        els.selectedDurationLabel.textContent = `${clipLen.toFixed(2)}s`;
+
+        if (seekPreview && state.nativeVideoPlayable && els.sourceVideoPreview.readyState >= 1) {
+          els.sourceVideoPreview.currentTime = seekTarget === 'end' ? state.trimEnd : state.trimStart;
+        }
+      }
+
+      els.trimStartSlider.addEventListener('input', () => {
+        state.trimStart = parseFloat(els.trimStartSlider.value);
+        updateTrimUI(true, 'start');
+      });
+
+      els.trimEndSlider.addEventListener('input', () => {
+        state.trimEnd = parseFloat(els.trimEndSlider.value);
+        updateTrimUI(true, 'end');
+      });
+
+      els.startMinusBtn.addEventListener('click', () => {
+        state.trimStart = Math.max(0, Number((state.trimStart - 0.1).toFixed(2)));
+        updateTrimUI(true, 'start');
+      });
+
+      els.startPlusBtn.addEventListener('click', () => {
+        state.trimStart = Math.min(state.trimEnd - 0.2, Number((state.trimStart + 0.1).toFixed(2)));
+        updateTrimUI(true, 'start');
+      });
+
+      els.endMinusBtn.addEventListener('click', () => {
+        state.trimEnd = Math.max(state.trimStart + 0.2, Number((state.trimEnd - 0.1).toFixed(2)));
+        updateTrimUI(true, 'end');
+      });
+
+      els.endPlusBtn.addEventListener('click', () => {
+        state.trimEnd = Math.min(state.duration, Number((state.trimEnd + 0.1).toFixed(2)));
+        updateTrimUI(true, 'end');
+      });
+
+      els.resetTrimBtn.addEventListener('click', () => {
+        state.trimStart = 0;
+        state.trimEnd = Number(state.duration.toFixed(2));
+        updateTrimUI(true, 'start');
+      });
+
+      // ==================== DRAG & DROP + FILE INPUT EVENTS ====================
+      els.dropZone.addEventListener('click', () => els.videoFileInput.click());
+      els.selectFileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        els.videoFileInput.click();
+      });
+
+      els.dropZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          els.videoFileInput.click();
+        }
+      });
+
+      ['dragenter', 'dragover'].forEach((evtName) => {
+        els.dropZone.addEventListener(evtName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          els.dropZone.classList.add('drag-active');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach((evtName) => {
+        els.dropZone.addEventListener(evtName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          els.dropZone.classList.remove('drag-active');
+        });
+      });
+
+      els.dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files.length > 0) {
+          handleFileSelected(files[0]);
+        }
+      });
+
+      els.videoFileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          handleFileSelected(e.target.files[0]);
+        }
+      });
+
+      els.changeVideoBtn.addEventListener('click', () => els.videoFileInput.click());
+      els.resultNewVideoBtn.addEventListener('click', () => els.videoFileInput.click());
+      els.deleteFileBtn.addEventListener('click', resetToUploadScreen);
+      els.resultDeleteBtn.addEventListener('click', resetToUploadScreen);
+
+      els.reconvertBtn.addEventListener('click', () => {
+        setActiveStep(2);
+        els.resultSection.classList.add('hidden');
+        els.workspaceSection.classList.remove('hidden');
+        setStatusBadge('ready', 'جاهز لإعادة التحويل');
+        els.workspaceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      // ==================== 4. 8-TIER SMART COMPRESSION SYSTEM (<= 7.5MB) ====================
+      function buildEightQualityTiers(origW, origH, sourceFps) {
+        const maxSourceFps = sourceFps > 0 ? Math.min(24, sourceFps) : 24;
+        const baseScale = origW > 1920 ? 1920 / origW : 1.0;
+
+        const tiersSpec = [
+          { scale: 1.00, fps: Math.min(24, maxSourceFps), label: 'المستوى 1: الدقة الأصلية الكاملة (100%) + أعلى سلاسة' },
+          { scale: 1.00, fps: Math.min(18, maxSourceFps), label: 'المستوى 2: الدقة الأصلية الكاملة (100%) @ 18 FPS' },
+          { scale: 1.00, fps: Math.min(14, maxSourceFps), label: 'المستوى 3: الدقة الأصلية الكاملة (100%) @ 14 FPS' },
+          { scale: 0.85, fps: Math.min(14, maxSourceFps), label: 'المستوى 4: أبعاد 85% متناسبة @ 14 FPS' },
+          { scale: 0.72, fps: Math.min(12, maxSourceFps), label: 'المستوى 5: أبعاد 72% متناسبة @ 12 FPS' },
+          { scale: 0.60, fps: Math.min(10, maxSourceFps), label: 'المستوى 6: أبعاد 60% متناسبة @ 10 FPS' },
+          { scale: 0.50, fps: Math.min(9, maxSourceFps),  label: 'المستوى 7: أبعاد 50% متناسبة @ 9 FPS' },
+          { scale: 0.40, fps: Math.min(8, maxSourceFps),  label: 'المستوى 8: أبعاد 40% متناسبة @ 8 FPS' },
+        ];
+
+        return tiersSpec.map((t, index) => {
+          let w = Math.max(120, Math.round(origW * baseScale * t.scale));
+          let h = Math.max(68, Math.round(origH * baseScale * t.scale));
+          if (w % 2 !== 0) w -= 1;
+          if (h % 2 !== 0) h -= 1;
+          return {
+            tierNumber: index + 1,
+            scale: t.scale,
+            fps: Math.max(6, t.fps),
+            width: w,
+            height: h,
+            label: t.label,
+          };
+        });
+      }
+
+      function updateProgressTelemetry(percent, title, detail, tierStr, dimsStr, fpsStr, estStr) {
+        const clamped = Math.max(0, Math.min(100, Math.round(percent)));
+        els.progressBarFill.style.width = `${clamped}%`;
+        els.progressPercentText.textContent = `${clamped}%`;
+        if (title) els.progressStageTitle.textContent = title;
+        if (detail) els.progressStageDetail.textContent = detail;
+        if (tierStr) els.telemetryAttempt.textContent = tierStr;
+        if (dimsStr) els.telemetryDims.textContent = dimsStr;
+        if (fpsStr) els.telemetryFps.textContent = fpsStr;
+        if (estStr) els.telemetryEstSize.textContent = estStr;
+      }
+
+      // FFmpeg Single-Pass Split Palettegen + Paletteuse Conversion (Supports both Alpha & Opaque)
+      async function encodeTierWithFFmpeg(ffmpeg, inputName, startTime, clipDuration, width, fps, preserveAlpha, onProgress) {
+        const outputName = 'dawahi_out.gif';
+        const progressFn = ({ progress }) => {
+          if (Number.isFinite(progress)) {
+            const pct = Math.min(96, Math.max(12, Math.round(progress * 100)));
+            onProgress(pct);
+          }
+        };
+
+        ffmpeg.onProgress(progressFn);
+
+        try {
+          // Exact filtergraph preserving natural colors (zero filters/saturation) and exact aspect ratio
+          const filterComplex = preserveAlpha
+            ? `fps=${fps},scale=${width}:-2:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=256:reserve_transparent=1:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3:diff_mode=rectangle:alpha_threshold=128`
+            : `fps=${fps},scale=${width}:-2:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=256:reserve_transparent=0:stats_mode=diff[p];[s1][p]paletteuse=dither=floyd_steinberg:diff_mode=rectangle`;
+
+          const exitCode = await ffmpeg.exec([
+            '-ss', startTime.toFixed(3),
+            '-t', clipDuration.toFixed(3),
+            '-i', inputName,
+            '-lavfi', filterComplex,
+            '-loop', '0',
+            '-y', outputName
+          ]);
+
+          if (exitCode !== 0) {
+            throw new Error(`FFMPEG_EXIT_${exitCode}`);
+          }
+
+          const gifBytes = await ffmpeg.readFile(outputName);
+          return new Uint8Array(gifBytes);
+        } finally {
+          ffmpeg.offProgress(progressFn);
+          await ffmpeg.deleteFile(outputName);
+        }
+      }
+
+      // Offline Fallback Pure-JS Web Worker GIF89a Encoder (Only for standard browser-playable videos when offline)
+      const OFFLINE_WORKER_CODE = `
+        'use strict';
+        function buildPalette(rgbaFrames) {
+          const samples = [];
+          const stepF = Math.max(1, Math.floor(rgbaFrames.length / 20));
+          for (let f = 0; f < rgbaFrames.length; f += stepF) {
+            const d = rgbaFrames[f];
+            const px = d.length >> 2;
+            const stride = Math.max(1, Math.floor(px / 3000));
+            for (let p = 0; p < px; p += stride) {
+              const i = p << 2;
+              samples.push([d[i], d[i + 1], d[i + 2]]);
+            }
+          }
+          let boxes = [samples.length ? samples : [[0, 0, 0]]];
+          while (boxes.length < 256) {
+            let bestIdx = -1, bestRange = -1, bestCh = 0;
+            for (let i = 0; i < boxes.length; i++) {
+              const b = boxes[i];
+              if (b.length < 2) continue;
+              let r0 = 255, r1 = 0, g0 = 255, g1 = 0, b0 = 255, b1 = 0;
+              for (let j = 0; j < b.length; j++) {
+                const c = b[j];
+                if (c[0] < r0) r0 = c[0]; if (c[0] > r1) r1 = c[0];
+                if (c[1] < g0) g0 = c[1]; if (c[1] > g1) g1 = c[1];
+                if (c[2] < b0) b0 = c[2]; if (c[2] > b1) b1 = c[2];
+              }
+              const mx = Math.max(r1 - r0, g1 - g0, b1 - b0);
+              if (mx > bestRange) {
+                bestRange = mx; bestIdx = i;
+                bestCh = mx === (g1 - g0) ? 1 : (mx === (r1 - r0) ? 0 : 2);
+              }
+            }
+            if (bestIdx === -1 || bestRange <= 1) break;
+            const target = boxes[bestIdx];
+            target.sort((a, b) => a[bestCh] - b[bestCh]);
+            const mid = target.length >> 1;
+            boxes.splice(bestIdx, 1, target.slice(0, mid), target.slice(mid));
+          }
+          const pal = new Uint8Array(768);
+          for (let i = 0; i < boxes.length && i < 256; i++) {
+            const b = boxes[i];
+            let rs = 0, gs = 0, bs = 0;
+            for (let j = 0; j < b.length; j++) { rs += b[j][0]; gs += b[j][1]; bs += b[j][2]; }
+            pal[i * 3] = Math.round(rs / b.length);
+            pal[i * 3 + 1] = Math.round(gs / b.length);
+            pal[i * 3 + 2] = Math.round(bs / b.length);
+          }
+          return pal;
+        }
+        function buildLut(pal) {
+          const lut = new Uint8Array(32768);
+          for (let r5 = 0; r5 < 32; r5++) {
+            const r = (r5 << 3) | (r5 >> 2);
+            for (let g5 = 0; g5 < 32; g5++) {
+              const g = (g5 << 3) | (g5 >> 2);
+              for (let b5 = 0; b5 < 32; b5++) {
+                const b = (b5 << 3) | (b5 >> 2);
+                let bi = 0, bd = 1e9;
+                for (let i = 0; i < 256; i++) {
+                  const dr = r - pal[i * 3], dg = g - pal[i * 3 + 1], db = b - pal[i * 3 + 2];
+                  const dist = dr * dr * 2 + dg * dg * 4 + db * db * 3;
+                  if (dist < bd) { bd = dist; bi = i; }
+                }
+                lut[(r5 << 10) | (g5 << 5) | b5] = bi;
+              }
+            }
+          }
+          return lut;
+        }
+        function lzwEncode(idxPx, out) {
+          out.push(8);
+          let nextCode = 258, codeSize = 9, bitBuf = 0, bitCnt = 0;
+          const sub = new Uint8Array(255); let subLen = 0;
+          const codeTab = new Int32Array(5003).fill(-1);
+          const hashTab = new Int32Array(5003);
+          const writeBits = (c, s) => {
+            bitBuf |= (c << bitCnt); bitCnt += s;
+            while (bitCnt >= 8) {
+              sub[subLen++] = bitBuf & 255;
+              if (subLen === 255) { out.push(255); for (let i = 0; i < 255; i++) out.push(sub[i]); subLen = 0; }
+              bitBuf >>= 8; bitCnt -= 8;
+            }
+          };
+          writeBits(256, codeSize);
+          let prefix = idxPx[0];
+          for (let i = 1; i < idxPx.length; i++) {
+            const k = idxPx[i], fcode = (k << 12) + prefix;
+            let h = ((k << 4) ^ prefix) % 5003; if (h < 0) h += 5003;
+            if (hashTab[h] === fcode && codeTab[h] !== -1) { prefix = codeTab[h]; continue; }
+            if (codeTab[h] !== -1) {
+              const disp = h === 0 ? 1 : 5003 - h; let f = false;
+              while (true) {
+                h -= disp; if (h < 0) h += 5003;
+                if (hashTab[h] === fcode && codeTab[h] !== -1) { prefix = codeTab[h]; f = true; break; }
+                if (codeTab[h] === -1) break;
+              }
+              if (f) continue;
+            }
+            writeBits(prefix, codeSize);
+            if (nextCode < 4096) {
+              codeTab[h] = nextCode++; hashTab[h] = fcode;
+              if (nextCode > (1 << codeSize) && codeSize < 12) codeSize++;
+            } else {
+              writeBits(256, codeSize); codeTab.fill(-1); nextCode = 258; codeSize = 9;
+            }
+            prefix = k;
+          }
+          writeBits(prefix, codeSize); writeBits(257, codeSize);
+          if (bitCnt > 0) sub[subLen++] = bitBuf & 255;
+          if (subLen > 0) { out.push(subLen); for (let i = 0; i < subLen; i++) out.push(sub[i]); }
+          out.push(0);
+        }
+        self.onmessage = ({ data: { frames, width, height, fps } }) => {
+          const rgbaFrames = frames.map(b => new Uint8ClampedArray(b));
+          const pal = buildPalette(rgbaFrames);
+          const lut = buildLut(pal);
+          const delay = Math.max(2, Math.round(100 / fps));
+          const out = [0x47,0x49,0x46,0x38,0x39,0x61, width&255,(width>>8)&255, height&255,(height>>8)&255, 0xF7,0,0];
+          for (let i = 0; i < 768; i++) out.push(pal[i]);
+          out.push(0x21,0xFF,0x0B,0x4E,0x45,0x54,0x53,0x43,0x41,0x50,0x45,0x32,0x2E,0x30,0x03,0x01,0,0,0);
+          for (let f = 0; f < rgbaFrames.length; f++) {
+            out.push(0x21,0xF9,0x04,0x04, delay&255,(delay>>8)&255,0,0, 0x2C,0,0,0,0, width&255,(width>>8)&255, height&255,(height>>8)&255, 0);
+            const px = new Uint8Array(width * height);
+            const d = rgbaFrames[f];
+            for (let p = 0; p < px.length; p++) {
+              const i = p << 2;
+              px[p] = lut[((d[i] >> 3) << 10) | ((d[i + 1] >> 3) << 5) | (d[i + 2] >> 3)];
+            }
+            lzwEncode(px, out);
+            self.postMessage({ type: 'prog', pct: 45 + Math.round(((f + 1) / rgbaFrames.length) * 52) });
+          }
+          out.push(0x3B);
+          const buf = new Uint8Array(out).buffer;
+          self.postMessage({ type: 'done', buf }, [buf]);
+        };
+      `;
+
+      async function encodeOfflineFallback(videoUrl, startTime, endTime, width, height, fps, onPct) {
+        const clipDur = Math.max(0.1, endTime - startTime);
+        const totalFrames = Math.max(2, Math.round(clipDur * fps));
+        const interval = clipDur / totalFrames;
+
+        const v = document.createElement('video');
+        v.src = videoUrl;
+        v.muted = true;
+        v.playsInline = true;
+        await new Promise((res, rej) => {
+          v.onloadeddata = res;
+          v.onerror = rej;
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const buffers = [];
+
+        for (let i = 0; i < totalFrames; i++) {
+          if (state.cancelRequested) throw new Error('CANCELLED');
+          v.currentTime = Math.min(endTime - 0.005, startTime + i * interval);
+          await new Promise((r) => {
+            v.onseeked = r;
+            setTimeout(r, 300);
+          });
+          ctx.drawImage(v, 0, 0, width, height);
+          buffers.push(ctx.getImageData(0, 0, width, height).data.buffer);
+          onPct(5 + Math.round(((i + 1) / totalFrames) * 38));
+        }
+
+        v.removeAttribute('src');
+        v.load();
+
+        return new Promise((resolve, reject) => {
+          const blob = new Blob([OFFLINE_WORKER_CODE], { type: 'text/javascript' });
+          const url = URL.createObjectURL(blob);
+          const w = new Worker(url);
+          state.activeWorker = w;
+
+          w.onmessage = (e) => {
+            if (e.data.type === 'prog') onPct(e.data.pct);
+            if (e.data.type === 'done') {
+              w.terminate();
+              URL.revokeObjectURL(url);
+              state.activeWorker = null;
+              resolve(new Uint8Array(e.data.buf));
+            }
+          };
+          w.onerror = (err) => {
+            w.terminate();
+            URL.revokeObjectURL(url);
+            state.activeWorker = null;
+            reject(err);
+          };
+          w.postMessage({ frames: buffers, width, height, fps }, buffers);
+        });
+      }
+
+      // ==================== MAIN CONVERSION ORCHESTRATOR ====================
+      async function startSmartConversion() {
+        if (!state.file || state.isConverting) return;
+
+        hideAlert();
+        cleanupGifMemory();
+
+        state.isConverting = true;
+        state.cancelRequested = false;
+
+        setActiveStep(3);
+        els.convertBtn.disabled = true;
+        els.resultSection.classList.add('hidden');
+        els.progressCard.classList.remove('hidden');
+        setStatusBadge('processing', 'جارٍ التحويل الذكي...');
+        els.progressCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        const clipDuration = Math.max(0.2, Number((state.trimEnd - state.trimStart).toFixed(2)));
+        const preserveAlpha = Boolean(els.preserveAlphaToggle.checked);
+        const tiers = buildEightQualityTiers(state.width, state.height, state.sourceFps);
+
+        updateProgressTelemetry(
+          2,
+          'جارٍ تحميل وتجهيز محرك التحويل...',
+          preserveAlpha ? 'تفعيل مسار حفظ الشفافية (Alpha Palette Pipeline)' : 'تفعيل مسار الألوان الطبيعية عالي الدقة',
+          '1 / 8',
+          `${tiers[0].width} × ${tiers[0].height}`,
+          `${tiers[0].fps} FPS`,
+          'جارٍ الحساب...'
+        );
+
+        let ffmpeg = null;
+        let useFFmpeg = false;
+        let inputVirtualName = '';
+
+        try {
+          ffmpeg = await ensureFFmpegLoaded();
+          const ext = state.file.name.toLowerCase().endsWith('.mov') ? 'mov' : 'mp4';
+          inputVirtualName = `convert_src.${ext}`;
+          await ffmpeg.writeFile(inputVirtualName, new Uint8Array(state.fileBuffer));
+          useFFmpeg = true;
+        } catch (err) {
+          if (!state.nativeVideoPlayable) {
+            state.isConverting = false;
+            els.convertBtn.disabled = false;
+            els.progressCard.classList.add('hidden');
+            setActiveStep(2);
+            setStatusBadge('error', 'يلزم الاتصال بالإنترنت');
+            showAlert(
+              'error',
+              'تعذّر تحميل محرك فك ترميز MOV الشفاف',
+              'ملفات MOV الاحترافية (ProRes 4444 / RLE) تتطلب تحميل نواة FFmpeg.wasm من الشبكة لمرة واحدة. يرجى التحقق من الاتصال بالإنترنت وإعادة المحاولة.'
+            );
+            return;
+          }
+          useFFmpeg = false;
+        }
+
+        let lastMeasuredBytes = 0;
+        let winningResult = null;
+
+        try {
+          for (let i = 0; i < tiers.length; i++) {
+            if (state.cancelRequested) throw new Error('CANCELLED');
+
+            const tier = tiers[i];
+            const estFrames = Math.max(2, Math.round(clipDuration * tier.fps));
+            const estSizeDisplay = lastMeasuredBytes > 0
+              ? `السابق: ${formatBytesToMB(lastMeasuredBytes)}`
+              : `~${formatBytesToMB(estFrames * tier.width * tier.height * 0.28)}`;
+
+            updateProgressTelemetry(
+              6,
+              `${tier.label}`,
+              preserveAlpha
+                ? 'توليد لوحة 256 لوناً مع قناة شفافية نقية (reserve_transparent=1)'
+                : 'توليد لوحة 256 لوناً طبيعية مع تدرج Floyd-Steinberg',
+              `${tier.tierNumber} / 8`,
+              `${tier.width} × ${tier.height}`,
+              `${tier.fps} FPS`,
+              estSizeDisplay
+            );
+
+            let gifBytes = null;
+
+            if (useFFmpeg) {
+              gifBytes = await encodeTierWithFFmpeg(
+                ffmpeg,
+                inputVirtualName,
+                state.trimStart,
+                clipDuration,
+                tier.width,
+                tier.fps,
+                preserveAlpha,
+                (pct) => updateProgressTelemetry(pct, null, null, null, null, null, null)
+              );
+            } else {
+              gifBytes = await encodeOfflineFallback(
+                state.videoUrl,
+                state.trimStart,
+                state.trimEnd,
+                tier.width,
+                tier.height,
+                tier.fps,
+                (pct) => updateProgressTelemetry(pct, null, null, null, null, null, null)
+              );
+            }
+
+            if (state.cancelRequested) throw new Error('CANCELLED');
+
+            lastMeasuredBytes = gifBytes.byteLength;
+            updateProgressTelemetry(
+              100,
+              `اكتمل فحص ${tier.label}`,
+              `الحجم الناتج: ${formatBytesToMB(lastMeasuredBytes)} (الحد الأقصى 7.50 MB)`,
+              null,
+              null,
+              null,
+              formatBytesToMB(lastMeasuredBytes)
+            );
+
+            // Stop immediately on the first tier <= 7.5MB to preserve maximum quality
+            if (lastMeasuredBytes <= MAX_GIF_BYTES) {
+              winningResult = {
+                bytes: gifBytes,
+                size: lastMeasuredBytes,
+                width: tier.width,
+                height: tier.height,
+                fps: tier.fps,
+                frameCount: estFrames,
+                tierLabel: tier.label,
+                preserveAlpha: useFFmpeg && preserveAlpha,
+                engineName: useFFmpeg ? 'FFmpeg.wasm Alpha Engine' : 'Web Worker GIF89a',
+              };
+              break;
+            }
+          }
+
+          // Clean up temporary virtual input file immediately
+          if (useFFmpeg && inputVirtualName) {
+            await ffmpeg.deleteFile(inputVirtualName);
+          }
+
+          state.isConverting = false;
+          els.convertBtn.disabled = false;
+          els.progressCard.classList.add('hidden');
+
+          if (winningResult) {
+            presentSuccessResult(winningResult);
+          } else {
+            // Even Tier 8 exceeded 7.5MB -> Lock download button & suggest optimal trim duration
+            setActiveStep(2);
+            setStatusBadge('error', 'تجاوز الحد المسموح 7.5MB');
+            els.downloadGifBtn.disabled = true;
+
+            const recommendedSec = Math.max(
+              1.0,
+              Math.floor(clipDuration * (7400000 / Math.max(lastMeasuredBytes, MAX_GIF_BYTES)) * 10) / 10
+            );
+
+            showAlert(
+              'warning',
+              'تعذّر الوصول إلى حجم أقل من 7.5MB دون التضحية الكبيرة بجودة الصورة',
+              `حتى مع المستوى الثامن (أبعاد 40% ومعدل 8 FPS)، بلغ حجم الملف ${formatBytesToMB(lastMeasuredBytes)} لأن مدة المقطع (${clipDuration.toFixed(1)} ثانية) طويلة نسبياً. لم يتم قص الفيديو تلقائياً حفاظاً على محتواك؛ ننصحك بتقليل المدة إلى حوالي ${recommendedSec} ثانية.`,
+              [
+                {
+                  label: `تطبيق المدة المقترحة (${recommendedSec}s)`,
+                  onClick: () => {
+                    state.trimEnd = Math.min(state.duration, Number((state.trimStart + recommendedSec).toFixed(2)));
+                    updateTrimUI(true, 'end');
+                    hideAlert();
+                  }
+                }
+              ]
+            );
+          }
+        } catch (err) {
+          if (useFFmpeg && inputVirtualName) {
+            await ffmpeg.deleteFile(inputVirtualName);
+          }
+          state.isConverting = false;
+          els.convertBtn.disabled = false;
+          els.progressCard.classList.add('hidden');
+          setActiveStep(2);
+
+          if (err && err.message === 'CANCELLED') {
+            setStatusBadge('ready', 'تم إلغاء التحويل');
+            showAlert('info', 'تم إلغاء عملية التحويل', 'تم إيقاف المعالجة وتنظيف الذاكرة المؤقتة.');
+          } else {
+            setStatusBadge('error', 'حدث خطأ أثناء التحويل');
+            showAlert(
+              'error',
+              'تعذّر إكمال عملية التحويل',
+              'حدث خطأ غير متوقع أثناء معالجة الإطارات في الذاكرة. جرّب تقليل مدة الفيديو قليلاً وإعادة المحاولة.'
+            );
+          }
+        }
+      }
+
+      els.convertBtn.addEventListener('click', startSmartConversion);
+      els.cancelConvertBtn.addEventListener('click', () => {
+        if (state.isConverting) {
+          state.cancelRequested = true;
+          if (state.activeWorker) {
+            state.activeWorker.terminate();
+            state.activeWorker = null;
+          }
+        }
+      });
+
+      // ==================== 5. RESULT SHOWCASE & VISUAL COMPARISON ====================
+      function presentSuccessResult(res) {
+        const blob = new Blob([res.bytes], { type: 'image/gif' });
+        const url = URL.createObjectURL(blob);
+
+        state.gifBlob = blob;
+        state.gifUrl = url;
+
+        setActiveStep(4);
+        setStatusBadge('success', 'تم التحويل بنجاح');
+
+        const quotaPct = Math.min(100, (res.size / MAX_GIF_BYTES) * 100);
+        els.resFileSize.textContent = formatBytesToMB(res.size);
+        els.resSizeQuotaBar.style.width = `${quotaPct.toFixed(1)}%`;
+        els.resSizeQuotaText.textContent = `${quotaPct.toFixed(0)}% من الحد الأقصى 7.50 MB`;
+
+        els.resResolution.textContent = `${res.width} × ${res.height}`;
+        els.resFrameCount.textContent = `${res.frameCount}`;
+        els.resFps.textContent = `${res.fps} FPS`;
+
+        els.resultOptimizationNote.textContent = `إعداد التحسين المعتمد: ${res.tierLabel}`;
+        els.engineUsedBadge.textContent = res.engineName;
+
+        if (res.preserveAlpha) {
+          els.resultAlphaTag.classList.remove('hidden');
+        } else {
+          els.resultAlphaTag.classList.add('hidden');
+        }
+
+        // Populate GIF Previews
+        els.finalGifPreview.src = url;
+        els.compareGifImg.src = url;
+        els.sideGifImg.src = url;
+
+        // Configure Original Source Layer in Comparison Views (supports both native video & Alpha MOV preview)
+        if (state.nativeVideoPlayable && !state.hasAlpha) {
+          els.compareOrigVideo.classList.remove('hidden');
+          els.compareOrigAlphaImg.classList.add('hidden');
+          els.compareOrigVideo.src = state.videoUrl;
+
+          els.sideOrigVideo.classList.remove('hidden');
+          els.sideOrigAlphaImg.classList.add('hidden');
+          els.sideOrigVideo.src = state.videoUrl;
+        } else if (state.alphaPreviewUrl) {
+          els.compareOrigVideo.classList.add('hidden');
+          els.compareOrigAlphaImg.classList.remove('hidden');
+          els.compareOrigAlphaImg.src = state.alphaPreviewUrl;
+
+          els.sideOrigVideo.classList.add('hidden');
+          els.sideOrigAlphaImg.classList.remove('hidden');
+          els.sideOrigAlphaImg.src = state.alphaPreviewUrl;
+        }
+
+        els.sideOrigBadge.textContent = `${state.width} × ${state.height} • ${formatBytesToMB(state.file.size)}`;
+        els.sideGifBadge.textContent = `${res.width} × ${res.height} • ${formatBytesToMB(res.size)}`;
+
+        // Strictly disable download if > 7.5MB
+        els.downloadGifBtn.disabled = res.size > MAX_GIF_BYTES;
+
+        switchComparisonMode('single');
+        els.workspaceSection.classList.add('hidden');
+        els.resultSection.classList.remove('hidden');
+        els.resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function switchComparisonMode(mode) {
+        const activeClasses = ['bg-violetlux-600', 'text-white'];
+        const inactiveClasses = ['text-slate-300', 'hover:text-white'];
+
+        [els.modeSingleBtn, els.modeSliderBtn, els.modeSideBySideBtn].forEach((btn) => {
+          btn.classList.remove(...activeClasses);
+          btn.classList.add(...inactiveClasses);
+        });
+
+        els.viewSingleGif.classList.add('hidden');
+        els.viewSplitCompare.classList.add('hidden');
+        els.viewSideBySide.classList.add('hidden');
+
+        els.compareOrigVideo.pause();
+        els.sideOrigVideo.pause();
+
+        if (mode === 'single') {
+          els.modeSingleBtn.classList.add(...activeClasses);
+          els.modeSingleBtn.classList.remove(...inactiveClasses);
+          els.viewSingleGif.classList.remove('hidden');
+        } else if (mode === 'slider') {
+          els.modeSliderBtn.classList.add(...activeClasses);
+          els.modeSliderBtn.classList.remove(...inactiveClasses);
+          els.viewSplitCompare.classList.remove('hidden');
+          if (state.nativeVideoPlayable && !state.hasAlpha) {
+            els.compareOrigVideo.currentTime = state.trimStart;
+            els.compareOrigVideo.play().catch(() => {});
+          }
+        } else if (mode === 'side') {
+          els.modeSideBySideBtn.classList.add(...activeClasses);
+          els.modeSideBySideBtn.classList.remove(...inactiveClasses);
+          els.viewSideBySide.classList.remove('hidden');
+          if (state.nativeVideoPlayable && !state.hasAlpha) {
+            els.sideOrigVideo.currentTime = state.trimStart;
+            els.sideOrigVideo.play().catch(() => {});
+          }
+        }
+      }
+
+      els.modeSingleBtn.addEventListener('click', () => switchComparisonMode('single'));
+      els.modeSliderBtn.addEventListener('click', () => switchComparisonMode('slider'));
+      els.modeSideBySideBtn.addEventListener('click', () => switchComparisonMode('side'));
+
+      // Interactive Split Slider (Mouse & Touch)
+      let isDraggingSlider = false;
+
+      function updateComparePosition(clientX) {
+        const rect = els.compareContainer.getBoundingClientRect();
+        if (!rect.width) return;
+        let pct = ((clientX - rect.left) / rect.width) * 100;
+        pct = Math.max(4, Math.min(96, pct));
+        state.comparePercent = pct;
+        els.compareHandle.style.left = `${pct}%`;
+        els.compareVideoOverlay.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+      }
+
+      els.compareContainer.addEventListener('mousedown', (e) => {
+        isDraggingSlider = true;
+        updateComparePosition(e.clientX);
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (isDraggingSlider) updateComparePosition(e.clientX);
+      });
+      window.addEventListener('mouseup', () => {
+        isDraggingSlider = false;
+      });
+
+      els.compareContainer.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches.length > 0) {
+          isDraggingSlider = true;
+          updateComparePosition(e.touches[0].clientX);
+        }
+      }, { passive: true });
+      els.compareContainer.addEventListener('touchmove', (e) => {
+        if (isDraggingSlider && e.touches && e.touches.length > 0) {
+          updateComparePosition(e.touches[0].clientX);
+        }
+      }, { passive: true });
+      els.compareContainer.addEventListener('touchend', () => {
+        isDraggingSlider = false;
+      });
+
+      [els.compareOrigVideo, els.sideOrigVideo].forEach((vid) => {
+        vid.addEventListener('timeupdate', () => {
+          if (vid.currentTime >= state.trimEnd) {
+            vid.currentTime = state.trimStart;
+          }
+        });
+      });
+
+      // ==================== 6. MOBILE & DESKTOP COMPATIBLE DOWNLOAD ====================
+      els.downloadGifBtn.addEventListener('click', () => {
+        if (!state.gifBlob || !state.gifUrl) return;
+
+        if (state.gifBlob.size > MAX_GIF_BYTES) {
+          showAlert(
+            'error',
+            'تم منع التنزيل لتجاوز الحد المسموح 7.5MB',
+            'يرجى تقليل مدة المقطع وإعادة التحويل للوصول إلى حجم أقل من أو يساوي 7.5MB.'
+          );
+          return;
+        }
+
+        const safeBase = (state.file ? state.file.name.replace(/\.[^/.]+$/, '') : 'dawahi_clip')
+          .replace(/[^a-zA-Z0-9_-]/g, '_')
+          .slice(0, 42) || 'dawahi_gif';
+        const fileName = `${safeBase}_dawahi_upload.gif`;
+
+        const a = document.createElement('a');
+        a.href = state.gifUrl;
+        a.download = fileName;
+        a.rel = 'noopener';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          document.body.removeChild(a);
+        }, 1500);
+      });
+
+      window.addEventListener('beforeunload', () => {
+        cleanupAllMemory();
+        if (state.ffmpeg) {
+          state.ffmpeg.terminate();
+        }
+      });
+    })();
+  </script>
+
+  <!-- ==================== NEW MODULE: PERMANENT DIRECT LINKS CLIENT (CLOUDFLARE R2 BACKEND API) ==================== -->
+  <script>
+    (() => {
+      'use strict';
+
+      const API_BASE = '/api/files';
+      const MAX_DIRECT_FILE_BYTES = 100 * 1024 * 1024; // 100 MB per direct-link upload
+
+      const ALLOWED_EXTENSIONS = new Set(['gif', 'mp4', 'mov', 'png', 'jpg', 'jpeg', 'webp']);
+      const ALLOWED_MIMES = new Set([
+        'image/gif',
+        'video/mp4',
+        'video/quicktime',
+        'image/png',
+        'image/jpeg',
+        'image/webp',
+      ]);
+
+      function getOwnerToken() {
+        const key = 'dawahi_owner_token_v1';
+        let token = localStorage.getItem(key);
+        if (!token || token.length < 16) {
+          const arr = new Uint8Array(16);
+          crypto.getRandomValues(arr);
+          token = Array.from(arr, (b) => b.toString(16).padStart(2, '0')).join('');
+          localStorage.setItem(key, token);
+        }
+        return token;
+      }
+
+      const OWNER_TOKEN = getOwnerToken();
+
+      const dlState = {
+        selectedFile: null,
+        isUploading: false,
+        latestRecord: null,
+        files: [],
+        pendingDeleteId: null,
+      };
+
+      const dlEls = {
+        alertBox: document.getElementById('dlAlertBox'),
+        alertIcon: document.getElementById('dlAlertIcon'),
+        alertTitle: document.getElementById('dlAlertTitle'),
+        alertMsg: document.getElementById('dlAlertMsg'),
+        closeAlertBtn: document.getElementById('dlCloseAlertBtn'),
+
+        fileInput: document.getElementById('dlFileInput'),
+        dropZone: document.getElementById('dlDropZone'),
+        selectBtn: document.getElementById('dlSelectBtn'),
+
+        selectedCard: document.getElementById('dlSelectedCard'),
+        selectedTypeBadge: document.getElementById('dlSelectedTypeBadge'),
+        selectedName: document.getElementById('dlSelectedName'),
+        selectedSize: document.getElementById('dlSelectedSize'),
+        selectedMime: document.getElementById('dlSelectedMime'),
+        clearSelectedBtn: document.getElementById('dlClearSelectedBtn'),
+        createLinkBtn: document.getElementById('dlCreateLinkBtn'),
+
+        progressWrapper: document.getElementById('dlProgressWrapper'),
+        progressStatus: document.getElementById('dlProgressStatus'),
+        progressPercent: document.getElementById('dlProgressPercent'),
+        progressBar: document.getElementById('dlProgressBar'),
+
+        resultCard: document.getElementById('dlResultCard'),
+        resultUrl: document.getElementById('dlResultUrl'),
+        copyBtn: document.getElementById('dlCopyBtn'),
+        openBtn: document.getElementById('dlOpenBtn'),
+        shareBtn: document.getElementById('dlShareBtn'),
+        telegramShareBtn: document.getElementById('dlTelegramShareBtn'),
+        whatsappShareBtn: document.getElementById('dlWhatsappShareBtn'),
+        previewContainer: document.getElementById('dlPreviewContainer'),
+
+        filesCount: document.getElementById('dlFilesCount'),
+        refreshListBtn: document.getElementById('dlRefreshListBtn'),
+        filesList: document.getElementById('dlFilesList'),
+      };
+
+      function formatSize(bytes) {
+        if (bytes < 1024 * 1024) {
+          return (bytes / 1024).toFixed(1) + ' KB';
+        }
+        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function showDlAlert(type, title, msg) {
+        dlEls.alertBox.classList.remove(
+          'hidden',
+          'bg-rose-500/15', 'border-rose-500/45', 'text-rose-200',
+          'bg-amber-500/15', 'border-amber-500/45', 'text-amber-200',
+          'bg-cyanlux-500/15', 'border-cyanlux-500/45', 'text-cyanlux-100'
+        );
+
+        if (type === 'error') {
+          dlEls.alertBox.classList.add('bg-rose-500/15', 'border-rose-500/45', 'text-rose-200');
+          dlEls.alertIcon.innerHTML = `<svg class="w-5 h-5 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/></svg>`;
+        } else {
+          dlEls.alertBox.classList.add('bg-amber-500/15', 'border-amber-500/45', 'text-amber-200');
+          dlEls.alertIcon.innerHTML = `<svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        }
+
+        dlEls.alertTitle.textContent = title;
+        dlEls.alertMsg.textContent = msg;
+      }
+
+      function hideDlAlert() {
+        dlEls.alertBox.classList.add('hidden');
+      }
+
+      dlEls.closeAlertBtn.addEventListener('click', hideDlAlert);
+
+      function validateDirectFile(file) {
+        if (!file) return { ok: false, reason: 'لم يتم اختيار أي ملف.' };
+
+        const ext = (file.name.split('.').pop() || '').toLowerCase();
+        if (!ALLOWED_EXTENSIONS.has(ext)) {
+          return {
+            ok: false,
+            reason: `امتداد الملف (.${ext || 'unknown'}) غير مسموح به. الصيغ المدعومة هي: GIF, MP4, MOV, PNG, JPG, JPEG, WEBP.`,
+          };
+        }
+
+        if (file.type && !ALLOWED_MIMES.has(file.type)) {
+          return {
+            ok: false,
+            reason: `نوع الملف (${file.type}) غير مسموح به لأسباب أمنية.`,
+          };
+        }
+
+        if (file.size <= 0) {
+          return { ok: false, reason: 'الملف فارغ (0 بايت).' };
+        }
+
+        if (file.size > MAX_DIRECT_FILE_BYTES) {
+          return {
+            ok: false,
+            reason: `حجم الملف (${formatSize(file.size)}) يتجاوز الحد الأقصى المسموح به للروابط المباشرة (100 MB).`,
+          };
+        }
+
+        return { ok: true, ext };
+      }
+
+      function handleDirectFileChoice(file) {
+        hideDlAlert();
+        const check = validateDirectFile(file);
+        if (!check.ok) {
+          showDlAlert('error', 'ملف غير مدعوم', check.reason);
+          return;
+        }
+
+        dlState.selectedFile = file;
+        dlEls.selectedTypeBadge.textContent = check.ext.toUpperCase();
+        dlEls.selectedName.textContent = file.name;
+        dlEls.selectedName.title = file.name;
+        dlEls.selectedSize.textContent = formatSize(file.size);
+        dlEls.selectedMime.textContent = file.type || `video/${check.ext}`;
+
+        dlEls.progressWrapper.classList.add('hidden');
+        dlEls.progressBar.style.width = '0%';
+        dlEls.progressPercent.textContent = '0%';
+        dlEls.selectedCard.classList.remove('hidden');
+      }
+
+      function clearSelectedDirectFile() {
+        dlState.selectedFile = null;
+        dlEls.fileInput.value = '';
+        dlEls.selectedCard.classList.add('hidden');
+        dlEls.progressWrapper.classList.add('hidden');
+      }
+
+      dlEls.dropZone.addEventListener('click', () => dlEls.fileInput.click());
+      dlEls.selectBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dlEls.fileInput.click();
+      });
+
+      dlEls.dropZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          dlEls.fileInput.click();
+        }
+      });
+
+      ['dragenter', 'dragover'].forEach((evt) => {
+        dlEls.dropZone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dlEls.dropZone.classList.add('drag-active');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach((evt) => {
+        dlEls.dropZone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dlEls.dropZone.classList.remove('drag-active');
+        });
+      });
+
+      dlEls.dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files.length > 0) {
+          handleDirectFileChoice(files[0]);
+        }
+      });
+
+      dlEls.fileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          handleDirectFileChoice(e.target.files[0]);
+        }
+      });
+
+      dlEls.clearSelectedBtn.addEventListener('click', () => {
+        if (!dlState.isUploading) clearSelectedDirectFile();
+      });
+
+      dlEls.createLinkBtn.addEventListener('click', () => {
+        if (!dlState.selectedFile || dlState.isUploading) return;
+
+        hideDlAlert();
+        dlState.isUploading = true;
+        dlEls.createLinkBtn.disabled = true;
+        dlEls.clearSelectedBtn.disabled = true;
+        dlEls.progressWrapper.classList.remove('hidden');
+        dlEls.progressStatus.textContent = 'جارٍ رفع الملف إلى التخزين السحابي الدائم...';
+        dlEls.progressBar.style.width = '0%';
+        dlEls.progressPercent.textContent = '0%';
+
+        const formData = new FormData();
+        formData.append('file', dlState.selectedFile);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `${API_BASE}/upload`, true);
+        xhr.setRequestHeader('X-Dawahi-Owner-Token', OWNER_TOKEN);
+
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const pct = Math.min(99, Math.round((e.loaded / e.total) * 100));
+            dlEls.progressBar.style.width = `${pct}%`;
+            dlEls.progressPercent.textContent = `${pct}%`;
+            dlEls.progressStatus.textContent = `جارٍ الرفع (${formatSize(e.loaded)} / ${formatSize(e.total)})...`;
+          }
+        };
+
+        xhr.onload = () => {
+          dlState.isUploading = false;
+          dlEls.createLinkBtn.disabled = false;
+          dlEls.clearSelectedBtn.disabled = false;
+
+          let payload = null;
+          try {
+            payload = JSON.parse(xhr.responseText);
+          } catch (_) {}
+
+          if (xhr.status >= 200 && xhr.status < 300 && payload && payload.directUrl) {
+            dlEls.progressBar.style.width = '100%';
+            dlEls.progressPercent.textContent = '100%';
+            dlEls.progressStatus.textContent = 'اكتمل الرفع وحُفظ الملف بشكل دائم!';
+            presentPermanentLinkResult(payload);
+            clearSelectedDirectFile();
+            fetchUserFiles();
+          } else {
+            const serverMsg = (payload && payload.error)
+              ? payload.error
+              : 'مخزن Cloudflare R2 غير مربوط بعد بمشروع Cloudflare Pages. اربط حاوية R2 باسم المتغير R2_BUCKET من إعدادات المشروع ثم أعد المحاولة.';
+            showDlAlert('error', 'تعذّر إنشاء الرابط الدائم', serverMsg);
+          }
+        };
+
+        xhr.onerror = () => {
+          dlState.isUploading = false;
+          dlEls.createLinkBtn.disabled = false;
+          dlEls.clearSelectedBtn.disabled = false;
+          showDlAlert(
+            'error',
+            'تعذّر الاتصال بخادم التخزين السحابي',
+            'تعذّر الوصول إلى دالة الرفع (/api/files/upload). تأكد من نشر مجلد functions مع الموقع على Cloudflare Pages وربط حاوية R2_BUCKET.'
+          );
+        };
+
+        xhr.send(formData);
+      });
+
+      function presentPermanentLinkResult(record) {
+        dlState.latestRecord = record;
+        const url = record.directUrl;
+
+        dlEls.resultUrl.value = url;
+        dlEls.openBtn.href = url;
+        dlEls.telegramShareBtn.href = `https://t.me/share/url?url=${encodeURIComponent(url)}`;
+        dlEls.whatsappShareBtn.href = `https://wa.me/?text=${encodeURIComponent(url)}`;
+
+        const ext = (record.extension || '').toLowerCase();
+        dlEls.previewContainer.innerHTML = '';
+
+        if (['gif', 'png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = record.originalName || 'معاينة الملف';
+          img.className = 'max-w-full max-h-[360px] rounded-xl object-contain';
+          dlEls.previewContainer.appendChild(img);
+        } else if (['mp4', 'mov'].includes(ext)) {
+          const vid = document.createElement('video');
+          vid.src = url;
+          vid.controls = true;
+          vid.playsInline = true;
+          vid.preload = 'metadata';
+          vid.className = 'w-full max-h-[360px] rounded-xl object-contain';
+          dlEls.previewContainer.appendChild(vid);
+        }
+
+        dlEls.resultCard.classList.remove('hidden');
+        dlEls.resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      async function copyTextToClipboard(text, btnEl) {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (_) {
+          const tmp = document.createElement('textarea');
+          tmp.value = text;
+          document.body.appendChild(tmp);
+          tmp.select();
+          document.execCommand('copy');
+          document.body.removeChild(tmp);
+        }
+
+        if (btnEl) {
+          const origHtml = btnEl.innerHTML;
+          btnEl.innerHTML = `<span>تم النسخ ✓</span>`;
+          setTimeout(() => {
+            btnEl.innerHTML = origHtml;
+          }, 1800);
+        }
+      }
+
+      dlEls.copyBtn.addEventListener('click', () => {
+        if (dlEls.resultUrl.value) {
+          copyTextToClipboard(dlEls.resultUrl.value, dlEls.copyBtn);
+        }
+      });
+
+      dlEls.shareBtn.addEventListener('click', async () => {
+        const url = dlEls.resultUrl.value;
+        if (!url) return;
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: 'DAWAHI UPLOAD — رابط مباشر',
+              url,
+            });
+            return;
+          } catch (_) {}
+        }
+        copyTextToClipboard(url, dlEls.shareBtn);
+      });
+
+      async function fetchUserFiles() {
+        try {
+          const res = await fetch(API_BASE, {
+            headers: {
+              'X-Dawahi-Owner-Token': OWNER_TOKEN,
+            },
+          });
+          if (!res.ok) return;
+          const data = await res.json();
+          dlState.files = Array.isArray(data.files) ? data.files : [];
+          renderFilesList();
+        } catch (_) {}
+      }
+
+      function renderFilesList() {
+        dlEls.filesCount.textContent = String(dlState.files.length);
+
+        if (dlState.files.length === 0) {
+          dlEls.filesList.innerHTML = `
+            <div class="studio-tile rounded-2xl p-6 text-center text-xs sm:text-sm text-slate-400">
+              لا توجد ملفات مرفوعة حالياً. ارفع أي ملف أعلاه للحصول على رابط مباشر دائم.
+            </div>
+          `;
+          return;
+        }
+
+        dlEls.filesList.innerHTML = dlState.files.map((item) => {
+          const safeName = escapeHtml(item.originalName);
+          const safeUrl = escapeHtml(item.directUrl);
+          const safeType = escapeHtml((item.extension || '').toUpperCase());
+          const safeSize = escapeHtml(formatSize(item.sizeBytes || 0));
+          const isConfirming = dlState.pendingDeleteId === item.id;
+
+          return `
+            <div class="studio-tile rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <span dir="ltr" class="w-12 h-11 rounded-xl bg-violetlux-500/20 border border-violetlux-400/35 text-cyanlux-300 font-mono text-xs font-bold flex items-center justify-center shrink-0">
+                  ${safeType}
+                </span>
+                <div class="min-w-0">
+                  <p dir="ltr" class="font-mono text-xs sm:text-sm font-bold text-white truncate max-w-[240px] sm:max-w-sm" title="${safeName}">
+                    ${safeName}
+                  </p>
+                  <div class="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-slate-400">
+                    <span dir="ltr" class="font-mono text-cyanlux-400 font-bold">${safeSize}</span>
+                    <span>•</span>
+                    <span class="text-emerald-400 font-semibold">رابط دائم لا ينتهي</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2 justify-end">
+                <button
+                  type="button"
+                  data-copy-url="${safeUrl}"
+                  class="dl-item-copy px-3 py-2 rounded-xl bg-violetlux-600/25 hover:bg-violetlux-600/40 border border-violetlux-400/40 text-xs font-bold text-white transition"
+                >
+                  نسخ الرابط
+                </button>
+
+                <a
+                  href="${safeUrl}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="px-3 py-2 rounded-xl bg-slate-800/90 hover:border-cyanlux-400/50 border border-slate-700 text-xs font-bold text-cyanlux-300 transition"
+                >
+                  فتح
+                </a>
+
+                ${isConfirming ? `
+                  <button
+                    type="button"
+                    data-confirm-del="${escapeHtml(item.id)}"
+                    class="dl-item-confirm-del px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-bold text-white transition"
+                  >
+                    تأكيد الحذف النهائي
+                  </button>
+                  <button
+                    type="button"
+                    class="dl-item-cancel-del px-2.5 py-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300"
+                  >
+                    تراجع
+                  </button>
+                ` : `
+                  <button
+                    type="button"
+                    data-ask-del="${escapeHtml(item.id)}"
+                    class="dl-item-ask-del px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/35 text-xs font-bold text-rose-300 transition"
+                  >
+                    حذف الملف
+                  </button>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        dlEls.filesList.querySelectorAll('.dl-item-copy').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            copyTextToClipboard(btn.getAttribute('data-copy-url'), btn);
+          });
+        });
+
+        dlEls.filesList.querySelectorAll('.dl-item-ask-del').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            dlState.pendingDeleteId = btn.getAttribute('data-ask-del');
+            renderFilesList();
+          });
+        });
+
+        dlEls.filesList.querySelectorAll('.dl-item-cancel-del').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            dlState.pendingDeleteId = null;
+            renderFilesList();
+          });
+        });
+
+        dlEls.filesList.querySelectorAll('.dl-item-confirm-del').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const fileId = btn.getAttribute('data-confirm-del');
+            btn.disabled = true;
+            btn.textContent = 'جارٍ الحذف...';
+            try {
+              const res = await fetch(`${API_BASE}/${encodeURIComponent(fileId)}`, {
+                method: 'DELETE',
+                headers: {
+                  'X-Dawahi-Owner-Token': OWNER_TOKEN,
+                },
+              });
+              if (res.ok) {
+                dlState.pendingDeleteId = null;
+                await fetchUserFiles();
+              } else {
+                showDlAlert('error', 'فشل حذف الملف', 'تعذّر حذف الملف من التخزين السحابي.');
+              }
+            } catch (_) {
+              showDlAlert('error', 'خطأ في الاتصال', 'تعذّر الوصول إلى الخادم لتنفيذ الحذف.');
+            }
+          });
+        });
+      }
+
+      dlEls.refreshListBtn.addEventListener('click', fetchUserFiles);
+      fetchUserFiles();
+    })();
+  </script>
+
+</body>
+</html>

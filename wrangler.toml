@@ -1,0 +1,7 @@
+name = "dawahi-upload"
+compatibility_date = "2026-01-01"
+pages_build_output_dir = "."
+
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "dawahi-upload-files"
